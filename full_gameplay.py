@@ -5,7 +5,7 @@ import math
 import sys
 import pyperclip
 from google import genai
-client = genai.Client(api_key ='use-your-own')
+client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
 
 import json
 
@@ -159,11 +159,11 @@ begin_button_rect.topleft = (450, 400)
 
 #INFO
 close_button_rect = button_image.get_rect()
-close_button_rect.topleft = (600, 450)
+close_button_rect.topleft = (450, 500)
 
 #UPLOAD
 done_upload_button_rect = button_image.get_rect()
-done_upload_button_rect.topleft = (675, 425)
+done_upload_button_rect.topleft = (450, 540)
 
 #CHOOSE FIGHTER
 left_button_rect = button_image.get_rect()
@@ -171,27 +171,27 @@ left_button_rect.topleft = (600, 400)
 right_button_rect = button_image.get_rect()
 right_button_rect.topleft = (500, 400)
 continue_fighter_button_rect = button_image.get_rect()
-continue_fighter_button_rect.topleft = (450, 400)
+continue_fighter_button_rect.topleft = (450, 500)
 
 #BATTLE BEGINS
 continue_battle_button_rect = button_image.get_rect()
-continue_battle_button_rect.topleft = (450, 450)
+continue_battle_button_rect.topleft = (450, 575)
 
 #QUESTION
 done_question_button_rect = button_image.get_rect()
-done_question_button_rect.topleft = (300, 500)
+done_question_button_rect.topleft = (450, 505)
 
 #ANS_RESULT
 done_result_button_rect = button_image.get_rect()
-done_result_button_rect.topleft = (450, 500)
+done_result_button_rect.topleft = (450, 565)
 
 #YOU ATTACK
 continue_attack_button_rect = button_image.get_rect()
-continue_attack_button_rect.topleft = (450, 575)
+continue_attack_button_rect.topleft = (450, 615)
 
 #REVIEW TEXT
 done_review_button_rect = button_image.get_rect()
-done_review_button_rect.topleft = (400, 400)
+done_review_button_rect.topleft = (450, 500)
 
 #GAME OVER
 stats_button_rect = button_image.get_rect()
@@ -201,7 +201,7 @@ play_again_button_rect.topleft = (450, 400)
 
 #STATS
 done_stats_button_rect = button_image.get_rect()
-done_stats_button_rect.topleft = (450, 600)
+done_stats_button_rect.topleft = (450, 565)
 
 button_size = upload_text_button_rect.size
 
@@ -388,7 +388,7 @@ def draw_generating_questions():
 
     display.blit(bg_image, (0, 0))
 
-    text_box = pygame.Rect(150, 250, 700, 100)
+    text_box = pygame.Rect(200, 250, 700, 100)
     pygame.draw.rect(display, WHITE, text_box)
     pygame.draw.rect(display, BLACK, text_box, 2)
 
@@ -440,22 +440,18 @@ def draw_choose_fighter():
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
+    if sprite_num == 0:
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 1:
         display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 2:
         display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 325 + bob_offset))
     
 
     sprite_x, sprite_y = 50, 300
@@ -527,22 +523,18 @@ def draw_battle_begins():
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
+    if sprite_num == 0:
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 1:
         display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 2:
         display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 325 + bob_offset))
 
     if continue_battle_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, continue_battle_button_rect)
@@ -576,22 +568,20 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (10, 350 + bob_offset))
-    elif sprite == 1:
-        display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
+    
+    if sprite_num == 0:
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (825, 400 + bob_offset))
+    elif sprite_num == 1:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
+    elif sprite_num == 2:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
     else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (825, 350 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (800, 375 + bob_offset))
+
     start_y = inner_box.y + 180
     circle_radius = 10
 
@@ -643,30 +633,29 @@ def draw_review(review_quote = "placeholder"):
     inner_box = pygame.Rect(200, 80, 700, 460)
     pygame.draw.rect(display, WHITE, inner_box)  
     pygame.draw.rect(display, (100, 100, 100), inner_box, 2)  
+
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+
+    if sprite_num == 0:
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (825, 400 + bob_offset))
+    elif sprite_num == 1:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
+    elif sprite_num == 2:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
+    else:
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (800, 375 + bob_offset))
+
     title_text = font.render("Text To Review:", True, BLACK)
     display.blit(title_text, (inner_box.x + 300, inner_box.y + 20)) 
     
     render_wrapped_text(review_quote, font, BLACK, pygame.Rect(inner_box.x + 20, inner_box.y + 60, 660, 100), display)
- 
-    sprite = choose_player_sprite(sprite_num)
-    enemy_sprite = choose_enemy_sprite(sprite_num)
-    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
-        display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
-    else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+
     if done_review_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_review_button_rect)
     else:
@@ -700,22 +689,20 @@ def draw_result():
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
-        display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
+    
+    if sprite_num == 0:
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (825, 400 + bob_offset))
+    elif sprite_num == 1:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
+    elif sprite_num == 2:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
     else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (800, 375 + bob_offset))
+
     if done_result_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_result_button_rect)
     else:
@@ -739,22 +726,20 @@ def draw_attack():
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
+    
+    if sprite_num == 0:
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 1:
         display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 2:
         display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 325 + bob_offset))
+
     if continue_attack_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, continue_attack_button_rect)
     else:
@@ -787,22 +772,19 @@ def draw_attack():
                 sprite = choose_player_sprite(sprite_num)
                 enemy_sprite = choose_enemy_sprite(sprite_num)
                 enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-                if sprite == 0:
-                    display.blit(sprite, (25, 275 + bob_offset))
-                elif sprite == 1:
+                
+                if sprite_num == 0:
+                    display.blit(sprite, (50, 350 + bob_offset))
+                    display.blit(enemy_sprite, (800, 350 + bob_offset))
+                elif sprite_num == 1:
                     display.blit(sprite, (50, 300 + bob_offset))
-                elif sprite == 2:
+                    display.blit(enemy_sprite, (800, 350 + bob_offset))
+                elif sprite_num == 2:
                     display.blit(sprite, (25, 300 + bob_offset))
+                    display.blit(enemy_sprite, (800, 350 + bob_offset))
                 else:
-                    display.blit(sprite, (50, 325 + bob_offset))
-                if enemy_sprite == 0:
-                    display.blit(enemy_sprite, (775, 300 + bob_offset))
-                elif enemy_sprite == 1:
-                    display.blit(enemy_sprite, (750, 450 + bob_offset))
-                elif enemy_sprite == 2:
-                    display.blit(enemy_sprite, (750, 600 + bob_offset))
-                else:
-                    display.blit(enemy_sprite, (700, 300 + bob_offset))
+                    display.blit(sprite, (50, 350 + bob_offset))
+                    display.blit(enemy_sprite, (800, 325 + bob_offset))
 
                 if continue_attack_button_rect.collidepoint(mouse_pos):
                     display.blit(hover_button_image, continue_attack_button_rect)
@@ -833,22 +815,19 @@ def draw_attack():
             sprite = choose_player_sprite(sprite_num)
             enemy_sprite = choose_enemy_sprite(sprite_num)
             enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-            if sprite == 0:
-                display.blit(sprite, (25, 275 + bob_offset))
-            elif sprite == 1:
+            
+            if sprite_num == 0:
+                display.blit(sprite, (50, 350 + bob_offset))
+                display.blit(enemy_sprite, (800, 350 + bob_offset))
+            elif sprite_num == 1:
                 display.blit(sprite, (50, 300 + bob_offset))
-            elif sprite == 2:
+                display.blit(enemy_sprite, (800, 350 + bob_offset))
+            elif sprite_num == 2:
                 display.blit(sprite, (25, 300 + bob_offset))
+                display.blit(enemy_sprite, (800, 350 + bob_offset))
             else:
-                display.blit(sprite, (50, 325 + bob_offset))
-            if enemy_sprite == 0:
-                display.blit(enemy_sprite, (775, 300 + bob_offset))
-            elif enemy_sprite == 1:
-                display.blit(enemy_sprite, (750, 450 + bob_offset))
-            elif enemy_sprite == 2:
-                display.blit(enemy_sprite, (750, 600 + bob_offset))
-            else:
-                display.blit(enemy_sprite, (700, 300 + bob_offset))
+                display.blit(sprite, (50, 350 + bob_offset))
+                display.blit(enemy_sprite, (800, 325 + bob_offset))
 
             if continue_attack_button_rect.collidepoint(mouse_pos):
                 display.blit(hover_button_image, continue_attack_button_rect)
@@ -883,22 +862,19 @@ def draw_attack():
                 sprite = choose_player_sprite(sprite_num)
                 enemy_sprite = choose_enemy_sprite(sprite_num)
                 enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-                if sprite == 0:
-                    display.blit(sprite, (25, 275 + bob_offset))
-                elif sprite == 1:
+                
+                if sprite_num == 0:
+                    display.blit(sprite, (50, 350 + bob_offset))
+                    display.blit(enemy_sprite, (800, 350 + bob_offset))
+                elif sprite_num == 1:
                     display.blit(sprite, (50, 300 + bob_offset))
-                elif sprite == 2:
+                    display.blit(enemy_sprite, (800, 350 + bob_offset))
+                elif sprite_num == 2:
                     display.blit(sprite, (25, 300 + bob_offset))
+                    display.blit(enemy_sprite, (800, 350 + bob_offset))
                 else:
-                    display.blit(sprite, (50, 325 + bob_offset))
-                if enemy_sprite == 0:
-                    display.blit(enemy_sprite, (775, 300 + bob_offset))
-                elif enemy_sprite == 1:
-                    display.blit(enemy_sprite, (750, 450 + bob_offset))
-                elif enemy_sprite == 2:
-                    display.blit(enemy_sprite, (750, 600 + bob_offset))
-                else:
-                    display.blit(enemy_sprite, (700, 300 + bob_offset))
+                    display.blit(sprite, (50, 350 + bob_offset))
+                    display.blit(enemy_sprite, (800, 325 + bob_offset))
 
                 if continue_attack_button_rect.collidepoint(mouse_pos):
                     display.blit(hover_button_image, continue_attack_button_rect)
@@ -928,22 +904,19 @@ def draw_attack():
             sprite = choose_player_sprite(sprite_num)
             enemy_sprite = choose_enemy_sprite(sprite_num)
             enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-            if sprite == 0:
-                display.blit(sprite, (25, 275 + bob_offset))
-            elif sprite == 1:
+            
+            if sprite_num == 0:
+                display.blit(sprite, (50, 350 + bob_offset))
+                display.blit(enemy_sprite, (800, 350 + bob_offset))
+            elif sprite_num == 1:
                 display.blit(sprite, (50, 300 + bob_offset))
-            elif sprite == 2:
+                display.blit(enemy_sprite, (800, 350 + bob_offset))
+            elif sprite_num == 2:
                 display.blit(sprite, (25, 300 + bob_offset))
+                display.blit(enemy_sprite, (800, 350 + bob_offset))
             else:
-                display.blit(sprite, (50, 325 + bob_offset))
-            if enemy_sprite == 0:
-                display.blit(enemy_sprite, (775, 300 + bob_offset))
-            elif enemy_sprite == 1:
-                display.blit(enemy_sprite, (750, 450 + bob_offset))
-            elif enemy_sprite == 2:
-                display.blit(enemy_sprite, (750, 600 + bob_offset))
-            else:
-                display.blit(enemy_sprite, (700, 300 + bob_offset))
+                display.blit(sprite, (50, 350 + bob_offset))
+                display.blit(enemy_sprite, (800, 325 + bob_offset))
 
             if continue_attack_button_rect.collidepoint(mouse_pos):
                 display.blit(hover_button_image, continue_attack_button_rect)
@@ -969,6 +942,23 @@ def draw_stats():
     pygame.draw.rect(display, (255, 255, 255), result_rect) 
     pygame.draw.rect(display, (0, 0, 0), result_rect, 2)
 
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    
+    if sprite_num == 0:
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (825, 400 + bob_offset))
+    elif sprite_num == 1:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
+    elif sprite_num == 2:
+        display.blit(sprite, (0, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 400 + bob_offset))
+    else:
+        display.blit(sprite, (0, 400 + bob_offset))
+        display.blit(enemy_sprite, (800, 375 + bob_offset))
+
     quotes_str = ""
     i = 1
 
@@ -977,28 +967,12 @@ def draw_stats():
         i += 1
 
 
-
-    result_text = ("Stats\n\n" + str(score) + f"/5 Questions Correct\n\n\nText to Review:\n\n{quotes_str}")
+    if score > 4:
+        result_text = ("Stats\n\n" + str(score) + f"/5 Questions Correct\n\n\n")
+    else:
+        result_text = ("Stats\n" + str(score) + f"/5 Questions Correct\n\nText to Review:{quotes_str}")
     render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
-    sprite = choose_player_sprite(sprite_num)
-    enemy_sprite = choose_enemy_sprite(sprite_num)
-    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
-        display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
-    else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+
     if done_stats_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_stats_button_rect)
     else:
@@ -1042,22 +1016,19 @@ def draw_game_over():
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
-    elif sprite == 1:
+    
+    if sprite_num == 0:
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 1:
         display.blit(sprite, (50, 300 + bob_offset))
-    elif sprite == 2:
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
+    elif sprite_num == 2:
         display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
-        display.blit(sprite, (50, 325 + bob_offset))
-    if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
-    elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (750, 450 + bob_offset))
-    elif enemy_sprite == 2:
-        display.blit(enemy_sprite, (750, 600 + bob_offset))
-    else:
-        display.blit(enemy_sprite, (700, 300 + bob_offset))
+        display.blit(sprite, (50, 350 + bob_offset))
+        display.blit(enemy_sprite, (800, 325 + bob_offset))
 
 # MAIN LOOP #
 
@@ -1147,6 +1118,8 @@ while running:
 
             if current_page == ATTACK and continue_attack_button_rect.collidepoint(event.pos):
                 if turns > 4:
+                    if correct_ans:
+                        score += 1
                     current_page = GAME_OVER
                     clicked_blocked = True
                 elif correct_ans:
@@ -1177,6 +1150,7 @@ while running:
                 turns = 0
                 score = 0
                 sprite_num = 0
+                quotes = []
                 current_page = HOME_SCREEN
                 clicked_blocked = True
 
@@ -1187,7 +1161,7 @@ while running:
 
         #play again -- uploaded is false
     if current_page == GENERATING_QUESTIONS and generating_screen_start_time is not None:
-        if pygame.time.get_ticks() - generating_screen_start_time >= 3000:  # 3 seconds
+        if pygame.time.get_ticks() - generating_screen_start_time >= 10000:  # 3 seconds
             current_page = CHOOSE_FIGHTER
             generating_screen_start_time = None  # reset timer
             click_blocked = True
