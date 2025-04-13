@@ -128,7 +128,7 @@ REVIEW_TEXT = 11
 GAME_OVER = 12
 STATS = 13
 
-current_page = ANS_RESULT
+current_page = STATS
 
 # BUTTONS #
 
@@ -170,7 +170,7 @@ done_result_button_rect.topleft = (450, 500)
 
 #YOU ATTACK
 continue_attack_button_rect = button_image.get_rect()
-continue_attack_button_rect.topleft = (450, 400)
+continue_attack_button_rect.topleft = (450, 575)
 
 #REVIEW TEXT
 done_review_button_rect = button_image.get_rect()
@@ -184,7 +184,7 @@ play_again_button_rect.topleft = (450, 400)
 
 #STATS
 done_stats_button_rect = button_image.get_rect()
-done_stats_button_rect.topleft = (700, 400)
+done_stats_button_rect.topleft = (450, 500)
 
 button_size = upload_text_button_rect.size
 
@@ -388,9 +388,116 @@ def draw_attack():
     display.blit(text_info, continue_rect)
 
     if correct_ans:
-        display.blit(bubbles, (150, 300))
+        clock = pygame.time.Clock()
+        start_pos = (150, 300)
+        end_pos = (650, 300)
+        duration = 120
+        frame = 0
+
+        while frame < duration:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            t = frame / duration
+            x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
+            y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
+
+            # Redraw everything
+            display.blit(bg_image_grey, (0, 0))
+            flipped_dino = pygame.transform.flip(fire_dino, True, False)
+            display.blit(flipped_dino, (700, 325))
+            display.blit(water_dino, (100, 300))
+
+            if continue_attack_button_rect.collidepoint(mouse_pos):
+                display.blit(hover_button_image, continue_attack_button_rect)
+            else:
+                display.blit(button_image, continue_attack_button_rect)
+
+            text_info = font.render("Continue", True, BLACK)
+            continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+            display.blit(text_info, continue_rect)
+
+            # Only draw bubbles during animation
+            display.blit(bubbles, (x, y))
+
+            pygame.display.update()
+            clock.tick(60)
+            frame += 1
+
+        # 🧹 Cleanup: Final frame with no bubbles
+        display.blit(bg_image_grey, (0, 0))
+        flipped_dino = pygame.transform.flip(fire_dino, True, False)
+        display.blit(flipped_dino, (700, 325))
+        display.blit(water_dino, (100, 300))
+
+        if continue_attack_button_rect.collidepoint(mouse_pos):
+            display.blit(hover_button_image, continue_attack_button_rect)
+        else:
+            display.blit(button_image, continue_attack_button_rect)
+
+        text_info = font.render("Continue", True, BLACK)
+        continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+        display.blit(text_info, continue_rect)
+
+        pygame.display.update()
+
     else:
-        display.blit(meatball, (650, 300))
+        clock = pygame.time.Clock()
+        start_pos = (650, 300)
+        end_pos = (150, 300)
+        duration = 120
+        frame = 0
+
+        while frame < duration:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            t = frame / duration
+            x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
+            y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
+
+            # Redraw everything
+            display.blit(bg_image_grey, (0, 0))
+            flipped_dino = pygame.transform.flip(fire_dino, True, False)
+            display.blit(flipped_dino, (700, 325))
+            display.blit(water_dino, (100, 300))
+
+            if continue_attack_button_rect.collidepoint(mouse_pos):
+                display.blit(hover_button_image, continue_attack_button_rect)
+            else:
+                display.blit(button_image, continue_attack_button_rect)
+
+            text_info = font.render("Continue", True, BLACK)
+            continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+            display.blit(text_info, continue_rect)
+
+            # Only draw bubbles during animation
+            display.blit(meatball, (x, y))
+
+            pygame.display.update()
+            clock.tick(60)
+            frame += 1
+
+        # 🧹 Cleanup: Final frame with no bubbles
+        display.blit(bg_image_grey, (0, 0))
+        flipped_dino = pygame.transform.flip(fire_dino, True, False)
+        display.blit(flipped_dino, (700, 325))
+        display.blit(water_dino, (100, 300))
+
+        if continue_attack_button_rect.collidepoint(mouse_pos):
+            display.blit(hover_button_image, continue_attack_button_rect)
+        else:
+            display.blit(button_image, continue_attack_button_rect)
+
+        text_info = font.render("Continue", True, BLACK)
+        continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+        display.blit(text_info, continue_rect)
+
+        pygame.display.update()
 
 
 def draw_review():
@@ -429,7 +536,36 @@ def draw_game_over():
 
 
 def draw_stats():
-    pass
+    display.blit(bg_image_grey, (0, 0))
+
+    flipped_dino = pygame.transform.flip(fire_dino, True, False)
+    temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
+    display.blit(temp_fire, (900, 350))
+
+    temp_water = pygame.transform.scale(water_dino, (200, 200))
+    display.blit(temp_water, (0, 300))
+
+    mouse_pos = pygame.mouse.get_pos()
+    font = pygame.font.Font(None, 36)
+
+    result_rect = pygame.Rect(200, 100, 700, 500)  
+    pygame.draw.rect(display, (255, 255, 255), result_rect) 
+    pygame.draw.rect(display, (0, 0, 0), result_rect, 2)
+
+#****** TO DO: Text to Review ******
+#quotes = ...
+    result_text = ("Stats\n\n" + str(score) + "/5 Questions Correct\n\n\nText to Review:\n\n(quotes)")
+    render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
+
+    if done_stats_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_stats_button_rect)
+    else:
+        display.blit(button_image, done_stats_button_rect)
+    
+    # Draw button text
+    close_text = font.render("Done", True, BLACK)
+    close_text_rect = close_text.get_rect(center=done_stats_button_rect.center)
+    display.blit(close_text, close_text_rect)
 
 # MAIN LOOP #
 
