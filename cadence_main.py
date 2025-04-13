@@ -8,22 +8,22 @@ import json
 
 # GEMINI API FUNCTION #
 
-def fun(txt):
-  response = client.models.generate_content(
-      model="gemini-2.0-flash",
-      contents=["generate 5 quiz questions based on this text and return questions and 4 multiple choice as a json file with questions named question and options named options and the answer named answer", txt],
-  )
-  text = response.text
-  text = text[len("```json"):]
-  text = text[:text.index("```")]
-  data= json.loads(text)
-  for i in data:
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=["can you return a sentence directly from this text that contains the answer to" + i['question'],txt]
-        )
-    i["highlight"] = response.text
-  return data
+# def fun(txt):
+#   response = client.models.generate_content(
+#       model="gemini-2.0-flash",
+#       contents=["generate 5 quiz questions based on this text and return questions and 4 multiple choice as a json file with questions named question and options named options and the answer named answer", txt],
+#   )
+#   text = response.text
+#   text = text[len("```json"):]
+#   text = text[:text.index("```")]
+#   data= json.loads(text)
+#   for i in data:
+#     response = client.models.generate_content(
+#         model="gemini-2.0-flash",
+#         contents=["can you return a sentence directly from this text that contains the answer to" + i['question'],txt]
+#         )
+#     i["highlight"] = response.text
+#   return data
 
 text = "One of the first organisms that humans domesticated was yeast. In 2011, while excavating an old graveyard in an Armenian cave, scientists discovered a 6,000 year-old winery, complete with a wine press, fermentation vessels, and even drinking cups. This winery was a major technological innovation that required understanding how to control Sacharomyces, the genus of yeast used in alcohol and bread production."
 
@@ -299,9 +299,9 @@ def draw_battle_begins():
         display.blit(button_image, continue_battle_button_rect)
     
     # Draw button text
-    text_info = font.render("Info", True, BLACK)
-    text_info_rect = text_info.get_rect(center=info_button_rect.center)
-    display.blit(text_info, text_info_rect)
+    text_info = font.render("Continue", True, BLACK)
+    text_info_rect = text_info.get_rect(center=continue_battle_button_rect.center)
+    display.blit(text_info, continue_battle_button_rect)
 
 def draw_question():
     pass
