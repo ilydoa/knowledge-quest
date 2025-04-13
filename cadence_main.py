@@ -98,13 +98,13 @@ empty_cloud = pygame.image.load('final_sprites/cloud.png')
 empty_cloud = pygame.transform.scale(empty_cloud, (700, 500))
 
 earth_dino = pygame.image.load('final_sprites/earthDino.png')
-earth_dino = pygame.transform.scale(earth_dino, (400, 400))
+earth_dino = pygame.transform.scale(earth_dino, (275, 275))
 
 fire_dino = pygame.image.load('final_sprites/fireDino.png')
 fire_dino = pygame.transform.scale(fire_dino, (275, 275))
 
 air_dino = pygame.image.load('final_sprites/airDino.png')
-air_dino = pygame.transform.scale(air_dino, (400, 400))
+air_dino = pygame.transform.scale(air_dino, (250, 250))
 
 water_dino = pygame.image.load('final_sprites/waterDino.png')
 water_dino = pygame.transform.scale(water_dino, (300, 300))
@@ -418,6 +418,9 @@ def choose_enemy_sprite(num):
 
 
 def draw_choose_fighter():
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
+
     mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image_grey, (0, 0))
     display.blit(choose_fighter_cloud, (75, 15))
@@ -432,23 +435,21 @@ def draw_choose_fighter():
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
     if sprite == 0:
-        temp_sprite = pygame.transform.scale(sprite, (350,350))
-        display.blit(temp_sprite, (25, 275))
+        display.blit(sprite, (25, 275 + bob_offset))
     elif sprite == 1:
-        display.blit(sprite, (50, 300))
+        display.blit(sprite, (50, 300 + bob_offset))
     elif sprite == 2:
-        display.blit(sprite, (25, 300))
+        display.blit(sprite, (25, 300 + bob_offset))
     else:
-        display.blit(sprite, (50, 325))
+        display.blit(sprite, (50, 325 + bob_offset))
     if enemy_sprite == 0:
-        display.blit(enemy_sprite, (700, 300))
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
     elif enemy_sprite == 1:
-        display.blit(enemy_sprite, (725, 325))
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
     elif enemy_sprite == 2:
-        temp_enemy_sprite = pygame.transform.scale(enemy_sprite, (350,350))
-        display.blit(temp_enemy_sprite, (700, 300))
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
     else:
-        display.blit(enemy_sprite, (700, 300))
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
 
     sprite_x, sprite_y = 50, 300
     sprite_width, sprite_height = sprite.get_width(), sprite.get_height()
@@ -508,16 +509,33 @@ def draw_choose_fighter():
 
 
 def draw_battle_begins():
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
     mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image, (0, 0))
     display.blit(battle_cloud, (75, 15))
 
     font = pygame.font.Font(None, 36)
     
-    flipped_dino = pygame.transform.flip(fire_dino, True, False)
-    display.blit(flipped_dino, (700, 325))
-
-    display.blit(water_dino, (100, 300))
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
 
     if continue_battle_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, continue_battle_button_rect)
@@ -532,6 +550,8 @@ def draw_battle_begins():
 selected_answer = -1
 def draw_question(question_text = "placeholder", answers = ["placeholder - correct", "placeholder", "placeholder", "placeholder"]):
     global selected_answer
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
     mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image_grey, (0, 0))
 
@@ -567,7 +587,25 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
         answer_text = font.render(answer[turns], True, BLACK)
         display.blit(answer_text, (circle_center[0] + 20, y_pos - 12))
 
-
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
     if done_question_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_question_button_rect)
     else:
@@ -585,6 +623,8 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
 
 def draw_review(review_quote = "placeholder"):
     global selected_answer
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
     mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image_grey, (0, 0))
     
@@ -597,6 +637,25 @@ def draw_review(review_quote = "placeholder"):
     
     render_wrapped_text(review_quote, font, BLACK, pygame.Rect(inner_box.x + 20, inner_box.y + 60, 660, 100), display)
  
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
     if done_review_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_review_button_rect)
     else:
@@ -616,13 +675,8 @@ def draw_review(review_quote = "placeholder"):
 def draw_result():
     mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image_grey, (0, 0))
-
-    flipped_dino = pygame.transform.flip(fire_dino, True, False)
-    temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
-    display.blit(temp_fire, (900, 350))
-
-    temp_water = pygame.transform.scale(water_dino, (200, 200))
-    display.blit(temp_water, (0, 300))
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
 
     font = pygame.font.Font(None, 36)
 
@@ -639,6 +693,25 @@ def draw_result():
 
     render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
 
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
     if done_result_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_result_button_rect)
     else:
@@ -652,14 +725,30 @@ def draw_result():
 def draw_attack():
     global attacked
     display.blit(bg_image_grey, (0, 0))
-
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
     mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
     
-    flipped_dino = pygame.transform.flip(fire_dino, True, False)
-    display.blit(flipped_dino, (700, 325))
-
-    display.blit(water_dino, (100, 300))
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
 
     if continue_attack_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, continue_attack_button_rect)
@@ -690,9 +779,25 @@ def draw_attack():
 
                 # Redraw everything
                 display.blit(bg_image_grey, (0, 0))
-                flipped_dino = pygame.transform.flip(fire_dino, True, False)
-                display.blit(flipped_dino, (700, 325))
-                display.blit(water_dino, (100, 300))
+                sprite = choose_player_sprite(sprite_num)
+                enemy_sprite = choose_enemy_sprite(sprite_num)
+                enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+                if sprite == 0:
+                    display.blit(sprite, (25, 275 + bob_offset))
+                elif sprite == 1:
+                    display.blit(sprite, (50, 300 + bob_offset))
+                elif sprite == 2:
+                    display.blit(sprite, (25, 300 + bob_offset))
+                else:
+                    display.blit(sprite, (50, 325 + bob_offset))
+                if enemy_sprite == 0:
+                    display.blit(enemy_sprite, (775, 300 + bob_offset))
+                elif enemy_sprite == 1:
+                    display.blit(enemy_sprite, (750, 450 + bob_offset))
+                elif enemy_sprite == 2:
+                    display.blit(enemy_sprite, (750, 600 + bob_offset))
+                else:
+                    display.blit(enemy_sprite, (700, 300 + bob_offset))
 
                 if continue_attack_button_rect.collidepoint(mouse_pos):
                     display.blit(hover_button_image, continue_attack_button_rect)
@@ -712,9 +817,25 @@ def draw_attack():
 
             # 🧹 Cleanup: Final frame with no bubbles
             display.blit(bg_image_grey, (0, 0))
-            flipped_dino = pygame.transform.flip(fire_dino, True, False)
-            display.blit(flipped_dino, (700, 325))
-            display.blit(water_dino, (100, 300))
+            sprite = choose_player_sprite(sprite_num)
+            enemy_sprite = choose_enemy_sprite(sprite_num)
+            enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+            if sprite == 0:
+                display.blit(sprite, (25, 275 + bob_offset))
+            elif sprite == 1:
+                display.blit(sprite, (50, 300 + bob_offset))
+            elif sprite == 2:
+                display.blit(sprite, (25, 300 + bob_offset))
+            else:
+                display.blit(sprite, (50, 325 + bob_offset))
+            if enemy_sprite == 0:
+                display.blit(enemy_sprite, (775, 300 + bob_offset))
+            elif enemy_sprite == 1:
+                display.blit(enemy_sprite, (750, 450 + bob_offset))
+            elif enemy_sprite == 2:
+                display.blit(enemy_sprite, (750, 600 + bob_offset))
+            else:
+                display.blit(enemy_sprite, (700, 300 + bob_offset))
 
             if continue_attack_button_rect.collidepoint(mouse_pos):
                 display.blit(hover_button_image, continue_attack_button_rect)
@@ -746,9 +867,25 @@ def draw_attack():
 
                 # Redraw everything
                 display.blit(bg_image_grey, (0, 0))
-                flipped_dino = pygame.transform.flip(fire_dino, True, False)
-                display.blit(flipped_dino, (700, 325))
-                display.blit(water_dino, (100, 300))
+                sprite = choose_player_sprite(sprite_num)
+                enemy_sprite = choose_enemy_sprite(sprite_num)
+                enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+                if sprite == 0:
+                    display.blit(sprite, (25, 275 + bob_offset))
+                elif sprite == 1:
+                    display.blit(sprite, (50, 300 + bob_offset))
+                elif sprite == 2:
+                    display.blit(sprite, (25, 300 + bob_offset))
+                else:
+                    display.blit(sprite, (50, 325 + bob_offset))
+                if enemy_sprite == 0:
+                    display.blit(enemy_sprite, (775, 300 + bob_offset))
+                elif enemy_sprite == 1:
+                    display.blit(enemy_sprite, (750, 450 + bob_offset))
+                elif enemy_sprite == 2:
+                    display.blit(enemy_sprite, (750, 600 + bob_offset))
+                else:
+                    display.blit(enemy_sprite, (700, 300 + bob_offset))
 
                 if continue_attack_button_rect.collidepoint(mouse_pos):
                     display.blit(hover_button_image, continue_attack_button_rect)
@@ -768,9 +905,25 @@ def draw_attack():
 
             # 🧹 Cleanup: Final frame with no bubbles
             display.blit(bg_image_grey, (0, 0))
-            flipped_dino = pygame.transform.flip(fire_dino, True, False)
-            display.blit(flipped_dino, (700, 325))
-            display.blit(water_dino, (100, 300))
+            sprite = choose_player_sprite(sprite_num)
+            enemy_sprite = choose_enemy_sprite(sprite_num)
+            enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+            if sprite == 0:
+                display.blit(sprite, (25, 275 + bob_offset))
+            elif sprite == 1:
+                display.blit(sprite, (50, 300 + bob_offset))
+            elif sprite == 2:
+                display.blit(sprite, (25, 300 + bob_offset))
+            else:
+                display.blit(sprite, (50, 325 + bob_offset))
+            if enemy_sprite == 0:
+                display.blit(enemy_sprite, (775, 300 + bob_offset))
+            elif enemy_sprite == 1:
+                display.blit(enemy_sprite, (750, 450 + bob_offset))
+            elif enemy_sprite == 2:
+                display.blit(enemy_sprite, (750, 600 + bob_offset))
+            else:
+                display.blit(enemy_sprite, (700, 300 + bob_offset))
 
             if continue_attack_button_rect.collidepoint(mouse_pos):
                 display.blit(hover_button_image, continue_attack_button_rect)
@@ -787,12 +940,8 @@ def draw_attack():
 def draw_stats():
     display.blit(bg_image_grey, (0, 0))
 
-    flipped_dino = pygame.transform.flip(fire_dino, True, False)
-    temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
-    display.blit(temp_fire, (900, 350))
-
-    temp_water = pygame.transform.scale(water_dino, (200, 200))
-    display.blit(temp_water, (0, 300))
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
 
     mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
@@ -806,6 +955,25 @@ def draw_stats():
     result_text = ("Stats\n\n" + str(score) + "/5 Questions Correct\n\n\nText to Review:\n\n(quotes)")
     render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
 
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
     if done_stats_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, done_stats_button_rect)
     else:
@@ -818,6 +986,8 @@ def draw_stats():
 
 def draw_game_over():
     display.blit(bg_image, (0, 0))
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
     if score == 5:
         display.blit(you_win_cloud,  (75, 15))
     else:
@@ -825,7 +995,25 @@ def draw_game_over():
 
     mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
-    
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    if sprite == 0:
+        display.blit(sprite, (25, 275 + bob_offset))
+    elif sprite == 1:
+        display.blit(sprite, (50, 300 + bob_offset))
+    elif sprite == 2:
+        display.blit(sprite, (25, 300 + bob_offset))
+    else:
+        display.blit(sprite, (50, 325 + bob_offset))
+    if enemy_sprite == 0:
+        display.blit(enemy_sprite, (775, 300 + bob_offset))
+    elif enemy_sprite == 1:
+        display.blit(enemy_sprite, (750, 450 + bob_offset))
+    elif enemy_sprite == 2:
+        display.blit(enemy_sprite, (750, 600 + bob_offset))
+    else:
+        display.blit(enemy_sprite, (700, 300 + bob_offset))
     if stats_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, stats_button_rect)
     else:
