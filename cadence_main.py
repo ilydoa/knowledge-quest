@@ -61,16 +61,16 @@ bg_image_grey = pygame.transform.scale(bg_image_grey, window_size)
 title_cloud = pygame.image.load('final_sprites/knowlege_quest_cloud.png')
 title_cloud = pygame.transform.scale(title_cloud, (1000, 700))
 
-battle_cloud = pygame.image.load('battle_begins_cloud.png')
+battle_cloud = pygame.image.load('final_sprites/battle_begins_cloud.png')
 battle_cloud = pygame.transform.scale(battle_cloud, (1000, 700))
 
-choose_cloud = pygame.image.load('choose_fighter_cloud.png')
+choose_cloud = pygame.image.load('final_sprites/choose_fighter_cloud.png')
 choose_cloud = pygame.transform.scale(choose_cloud, (1000, 700))
 
-you_win_cloud = pygame.image.load('you_win_cloud.png')
+you_win_cloud = pygame.image.load('final_sprites/you_win_cloud.png')
 you_win_cloud = pygame.transform.scale(you_win_cloud, (1000, 700))
 
-you_lose_cloud = pygame.image.load('you_lose_cloud.png')
+you_lose_cloud = pygame.image.load('final_sprites/you_lose_cloud.png')
 you_lose_cloud = pygame.transform.scale(you_lose_cloud, (1000, 700))
 
 button_image = pygame.image.load('final_sprites/button2.png')
@@ -95,10 +95,10 @@ water_dino = pygame.image.load('final_sprites/waterDino.png')
 water_dino = pygame.transform.scale(water_dino, (300, 300))
 
 incorrect_sprite = pygame.image.load('final_sprites/ermActually.png')
-incorrect_sprite = pygame.transform.scale(incorrect_sprite, (100, 100))
+incorrect_sprite = pygame.transform.scale(incorrect_sprite, (400, 400))
 
 correct_sprite = pygame.image.load('final_sprites/happy.png')
-correct_sprite = pygame.transform.scale(correct_sprite, (100, 100))
+correct_sprite = pygame.transform.scale(correct_sprite, (400, 400))
 
 meatball = pygame.image.load('final_sprites/meatball.png')
 meatball = pygame.transform.scale(meatball, (100, 100))
@@ -110,7 +110,7 @@ bees = pygame.image.load('final_sprites/bees.png')
 bees = pygame.transform.scale(bees, (100, 100))
 
 bubbles = pygame.image.load('final_sprites/bubbles.png')
-bubbles = pygame.transform.scale(bubbles, (150, 150))
+bubbles = pygame.transform.scale(bubbles, (175, 175))
 
 # PAGE STATES #
 
@@ -128,7 +128,7 @@ REVIEW_TEXT = 11
 GAME_OVER = 12
 STATS = 13
 
-current_page = ATTACK
+current_page = ANS_RESULT
 
 # BUTTONS #
 
@@ -166,11 +166,11 @@ done_question_button_rect.topleft = (300, 500)
 
 #ANS_RESULT
 done_result_button_rect = button_image.get_rect()
-done_result_button_rect.topleft = (300, 600)
+done_result_button_rect.topleft = (450, 500)
 
 #YOU ATTACK
 continue_attack_button_rect = button_image.get_rect()
-continue_attack_button_rect.topleft = (450, 500)
+continue_attack_button_rect.topleft = (450, 400)
 
 #REVIEW TEXT
 done_review_button_rect = button_image.get_rect()
@@ -225,7 +225,7 @@ max_rounds = 5
 turns = 0
 global score
 score = 5
-correct_ans = True
+correct_ans = False
 answer_processed = False
 uploaded = False
 
@@ -269,7 +269,26 @@ def draw_home_screen():
     text_info_rect = text_info.get_rect(center=info_button_rect.center)
     display.blit(text_info, text_info_rect)
 
+def render_wrapped_text(text, font, color, rect, surface, line_spacing=5):
+    words = text.split(' ')
+    lines = []
+    current_line = ""
 
+    for word in words:
+        test_line = current_line + word + " "
+        test_surface = font.render(test_line, True, color)
+        if test_surface.get_width() <= rect.width - 20:  # 20 for padding
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word + " "
+    lines.append(current_line)  # last line
+
+    y = rect.y + 20  # top padding
+    for line in lines:
+        line_surface = font.render(line, True, color)
+        surface.blit(line_surface, (rect.x + 20, y))  # left padding
+        y += line_surface.get_height() + line_spacing
 
 def draw_info():
     pass
@@ -312,7 +331,40 @@ def draw_question():
     pass
 
 def draw_result():
-    pass
+    display.blit(bg_image_grey, (0, 0))
+
+    flipped_dino = pygame.transform.flip(fire_dino, True, False)
+    temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
+    display.blit(temp_fire, (900, 350))
+
+    temp_water = pygame.transform.scale(water_dino, (200, 200))
+    display.blit(temp_water, (0, 300))
+
+    mouse_pos = pygame.mouse.get_pos()
+    font = pygame.font.Font(None, 36)
+
+    result_rect = pygame.Rect(200, 100, 700, 500)  
+    pygame.draw.rect(display, (255, 255, 255), result_rect) 
+    pygame.draw.rect(display, (0, 0, 0), result_rect, 2)   
+    result_text = ""
+    if correct_ans:
+        display.blit(correct_sprite, (350, 125))
+        result_text = "Correct Answer!"
+    else:
+        display.blit(incorrect_sprite, (350, 125))
+        result_text = "erm actually..."
+
+    render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
+
+    if done_result_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_result_button_rect)
+    else:
+        display.blit(button_image, done_result_button_rect)
+    
+    # Draw button text
+    close_text = font.render("Done", True, BLACK)
+    close_text_rect = close_text.get_rect(center=done_result_button_rect.center)
+    display.blit(close_text, close_text_rect)
 
 def draw_attack():
     display.blit(bg_image_grey, (0, 0))
