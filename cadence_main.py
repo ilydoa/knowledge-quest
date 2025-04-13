@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import math
 #from google import genai
 #client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
 
@@ -536,14 +537,19 @@ def draw_game_over():
 
 
 def draw_stats():
+    time_passed = pygame.time.get_ticks() / 1000  # in seconds
+    bob_offset = math.sin(time_passed * 2.5) * 10  # amplitude = 5 pixels
+
     display.blit(bg_image_grey, (0, 0))
 
+    # Fire dino (right)
     flipped_dino = pygame.transform.flip(fire_dino, True, False)
     temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
-    display.blit(temp_fire, (900, 350))
+    display.blit(temp_fire, (900, 350 + bob_offset))
 
+    # Water dino (left)
     temp_water = pygame.transform.scale(water_dino, (200, 200))
-    display.blit(temp_water, (0, 300))
+    display.blit(temp_water, (0, 300 + bob_offset))
 
     mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
