@@ -1,10 +1,41 @@
 import pygame
 import random
 import time
+from google import genai
+client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
+
+import json
+
+def fun(txt):
+  response = client.models.generate_content(
+      model="gemini-2.0-flash",
+      contents=["generate 5 quiz questions based on this text and return questions and 4 multiple choice as a json file with questions named question and options named options and the answer named answer", txt],
+  )
+  text = response.text
+  text = text[len("```json"):]
+  text = text[:text.index("```")]
+  data= json.loads(text)
+  for i in data:
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=["can you return a sentence directly from this text that contains the answer to" + i['question'],txt]
+        )
+    i["highlight"] = response.text
+  return data
+
+text = "One of the first organisms that humans domesticated was yeast. In 2011, while excavating an old graveyard in an Armenian cave, scientists discovered a 6,000 year-old winery, complete with a wine press, fermentation vessels, and even drinking cups. This winery was a major technological innovation that required understanding how to control Sacharomyces, the genus of yeast used in alcohol and bread production."
+
 
 # Initialize Pygame
 pygame.init()
 pygame.mixer.init()
+
+#define text
+user_text = ""
+texts = ""
+box_color_active = pygame.Color('lightskyblue3')
+box_color_inactive = pygame.Color('gray15')
+box_color = box_color_inactive
 
 # Define colors
 BLACK = (0, 0, 0)
@@ -63,12 +94,12 @@ PAGE_THEY_ATTACK = 7
 PAGE_TEXT_HIGHLIGHT = 8
 PAGE_REDEMPTION = 9
 PAGE_ENDING = 10
+UPLOAD_PAGE = 11
 
 current_page = PAGE_MAIN
 
 upload_text_button_rect = pygame.Rect(450, 400, 200, 50)
 info_button_rect = pygame.Rect(450, 475, 200, 50)
-
 begin_button_rect = pygame.Rect(450, 575, 200, 50)
 
 next1_button_rect = pygame.Rect(450, 650, 200, 50)
@@ -77,7 +108,7 @@ next3_button_rect = pygame.Rect(450, 525, 200, 50)
 next4_button_rect = pygame.Rect(450, 575, 200, 50)
 next5_button_rect = pygame.Rect(450, 600, 200, 50)
 next6_button_rect = pygame.Rect(450, 450, 200, 50)
-
+uploadbox = pygame.Rect(400, 400, 300, 200)
 close_button_rect = pygame.Rect(450, 625, 200, 50)
 
 play_again_button_rect = pygame.Rect(450, 500, 200, 50)
@@ -179,7 +210,6 @@ def draw_question():
     next_text_rect = next_text.get_rect(center=next1_button_rect.center)
     display.blit(next_text, next_text_rect)
 
-
 def draw_info_page():
     display.blit(bg_image, (0, 0))
     display.blit(intro_text_image, (300, 100))
@@ -196,9 +226,24 @@ def draw_info_page():
     text_rect = close_text.get_rect(center=close_button_rect.center)
     display.blit(close_text, text_rect)
 
+def upload_page():
+    display.blit(bg_image, (0, 0))
+    mouse_pos = pygame.mouse.get_pos()
+    if close_button_rect.collidepoint(mouse_pos):
+        pygame.draw.rect(display, button_hover_color, close_button_rect)
+    else:
+        pygame.draw.rect(display, RED, close_button_rect)
+    pygame.draw.rect(display, box_color, uploadbox,0)
+    font = pygame.font.Font(None, 36)
+    close_text = font.render("Close", True, WHITE)
+    text_rect = close_text.get_rect(center=close_button_rect.center)
+    display.blit(close_text, text_rect)
+    
+
+
+
 
 def draw_select_fighter_page():
-    print("drawing fighter page")
     display.blit(select_fighter_image, (0, 0))  # Use the loading image here
     # Draw button text
     font = pygame.font.Font(None, 36)
@@ -295,11 +340,35 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN and input_active and current_page == UPLOAD_PAGE:
+            if event.key == pygame.K_RETURN:
+                texts = user_text
+                user_text = ""  # clear after Enter
+                current_page = PAGE_MAIN
+                
+            elif event.key == pygame.K_BACKSPACE:
+                user_text = user_text[:-1]
+            else:
+                user_text += event.unicode
+            
         if event.type == pygame.MOUSEBUTTONDOWN:
             if current_page == PAGE_MAIN and begin_button_rect.collidepoint(event.pos):
                 print("Begin button clicked!")
                 current_page = PAGE_FIGHTER  # Go to second page
                 print(current_page)
+                diction = fun(text)
+                print(diction)
+
+            if current_page == PAGE_MAIN and upload_text_button_rect.collidepoint(event.pos):
+                current_page = UPLOAD_PAGE
+            if current_page == UPLOAD_PAGE and close_button_rect.collidepoint(event.pos):
+                current_page = PAGE_MAIN
+            if current_page == UPLOAD_PAGE and uploadbox.collidepoint(event.pos):
+                input_active = True
+                box_color = box_color_active
+            elif current_page == UPLOAD_PAGE:
+                input_active = False
+                box_color = box_color_inactive
 
             if current_page == PAGE_MAIN and info_button_rect.collidepoint(event.pos):
                 current_page = INFO_PAGE
@@ -349,6 +418,11 @@ while running:
         draw_fight_page()
     elif current_page == PAGE_YOU_ATTACK:
         draw_fight_page()
+    elif current_page == UPLOAD_PAGE:
+        upload_page()
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render(user_text, True, pygame.Color('white'))
+        display.blit(text_surface, (uploadbox.x + 10, uploadbox.y + 10))
 
     pygame.display.flip()
 
