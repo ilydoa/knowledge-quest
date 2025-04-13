@@ -3,6 +3,7 @@ import random
 import time
 import math
 import sys
+import pyperclip
 from google import genai
 client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
 
@@ -158,11 +159,11 @@ begin_button_rect.topleft = (450, 400)
 
 #INFO
 close_button_rect = button_image.get_rect()
-close_button_rect.topleft = (600, 400)
+close_button_rect.topleft = (600, 450)
 
 #UPLOAD
 done_upload_button_rect = button_image.get_rect()
-done_upload_button_rect.topleft = (700, 400)
+done_upload_button_rect.topleft = (675, 425)
 
 #CHOOSE FIGHTER
 left_button_rect = button_image.get_rect()
@@ -170,7 +171,7 @@ left_button_rect.topleft = (600, 400)
 right_button_rect = button_image.get_rect()
 right_button_rect.topleft = (500, 400)
 continue_fighter_button_rect = button_image.get_rect()
-continue_fighter_button_rect.topleft = (400, 400)
+continue_fighter_button_rect.topleft = (450, 400)
 
 #BATTLE BEGINS
 continue_battle_button_rect = button_image.get_rect()
@@ -250,6 +251,7 @@ sprite_num = 0
 correct_ans = True
 answer_processed = False
 uploaded = False
+quotes = []
 # PAGE DRAWING METHODS #
 
 def draw_home_screen():
@@ -574,7 +576,7 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
     enemy_sprite = choose_enemy_sprite(sprite_num)
     enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
     if sprite == 0:
-        display.blit(sprite, (25, 275 + bob_offset))
+        display.blit(sprite, (10, 350 + bob_offset))
     elif sprite == 1:
         display.blit(sprite, (50, 300 + bob_offset))
     elif sprite == 2:
@@ -582,7 +584,7 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
     else:
         display.blit(sprite, (50, 325 + bob_offset))
     if enemy_sprite == 0:
-        display.blit(enemy_sprite, (775, 300 + bob_offset))
+        display.blit(enemy_sprite, (825, 350 + bob_offset))
     elif enemy_sprite == 1:
         display.blit(enemy_sprite, (750, 450 + bob_offset))
     elif enemy_sprite == 2:
@@ -964,9 +966,16 @@ def draw_stats():
     pygame.draw.rect(display, (255, 255, 255), result_rect) 
     pygame.draw.rect(display, (0, 0, 0), result_rect, 2)
 
-#****** TO DO: Text to Review ******
-#quotes = ...
-    result_text = ("Stats\n\n" + str(score) + "/5 Questions Correct\n\n\nText to Review:\n\n(quotes)")
+    quotes_str = ""
+    i = 1
+
+    for quote in quotes:
+        quotes_str += f"\n{i}: {quote}"
+        i += 1
+
+
+
+    result_text = ("Stats\n\n" + str(score) + f"/5 Questions Correct\n\n\nText to Review:\n\n{quotes_str}")
     render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
     sprite = choose_player_sprite(sprite_num)
     enemy_sprite = choose_enemy_sprite(sprite_num)
@@ -1067,9 +1076,9 @@ while running:
                 
             if event.key == pygame.K_BACKSPACE:
                 user_text = user_text[:-1]
-            elif event.key == pygame.K_v and pygame.key.get_mods() and pygame.KMOD_CTRL:
+            elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 try:
-                    pasted = pygame.scrap.get(pygame.SCRAP_TEXT)
+                    pasted = pygame.scrap.get("text/plain;charset=utf-8")
                     if pasted:
                         pasted_text = pasted.decode("utf-8")
                         user_text += pasted_text
@@ -1080,7 +1089,6 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if current_page == HOME_SCREEN and uploaded == False and upload_text_button_rect.collidepoint(event.pos):
-                #print("Clicked Upload!")
                 current_page = UPLOAD
                 clicked_blocked = True
 
@@ -1122,17 +1130,16 @@ while running:
                 clicked_blocked = True
 
             if current_page == QUESTION and done_question_button_rect.collidepoint(event.pos):
-                correct_ans = selected_answer == answer[turns-1]
+                correct_ans = selected_answer == answer[turns]
+                #print(selected_answer)
+                #print(answer[turns])
                 turns += 1
                 selected_answer = None
                 current_page = ANS_RESULT
                 clicked_blocked = True
 
             if current_page == ANS_RESULT and done_result_button_rect.collidepoint(event.pos):
-                if turns > 4:
-                    current_page = GAME_OVER
-                else:
-                    current_page = ATTACK
+                current_page = ATTACK
                 clicked_blocked = True
 
             if current_page == ATTACK and continue_attack_button_rect.collidepoint(event.pos):
@@ -1163,6 +1170,7 @@ while running:
                 
             if current_page == GAME_OVER and play_again_button_rect.collidepoint(event.pos):
                 uploaded = False
+                user_text = ""
                 turns = 0
                 score = 0
                 sprite_num = 0
@@ -1210,20 +1218,22 @@ while running:
         draw_battle_begins()
     elif current_page == QUESTION:
         #selected_answer = None
-        answer_rects = draw_question(question[turns-1], options[turns-1]) 
+        answer_rects = draw_question(question[turns], options[turns]) 
         attacked = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i, rect in enumerate(answer_rects):
                 if rect.collidepoint(event.pos):
                     
-                    selected_answer = options[turns-1][i]  # 👈 record which one they picked
+                    selected_answer = options[turns][i]  # 👈 record which one they picked
     elif current_page == ANS_RESULT:
         draw_result()
     elif current_page == ATTACK:
         draw_attack() #need status of who was correct last
     elif current_page == REVIEW_TEXT:
         draw_review(highlights[turns-1])
+        if highlights[turns-1].strip("\n") not in quotes:
+            quotes.append(highlights[turns-1].strip("\n"))
     elif current_page == GAME_OVER:
         draw_game_over()
     elif current_page == STATS:
