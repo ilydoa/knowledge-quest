@@ -5,7 +5,7 @@ import math
 import sys
 import pyperclip
 from google import genai
-client = genai.Client(api_key ='enter-api-key-here')
+client = genai.Client(api_key ='use-your-own')
 
 import json
 
@@ -252,7 +252,7 @@ correct_ans = True
 answer_processed = False
 uploaded = False
 quotes = []
-scroll_offset = 0
+
 # PAGE DRAWING METHODS #
 
 def draw_home_screen():
@@ -300,7 +300,7 @@ def draw_home_screen():
     text_info_rect = text_info.get_rect(center=info_button_rect.center)
     display.blit(text_info, text_info_rect)
 
-def render_wrapped_text(text, font, color, rect, surface, line_spacing=5, scroll_offset):
+def render_wrapped_text(text, font, color, rect, surface, line_spacing=5):
     words = text.split(' ')
     lines = []
     current_line = ""
@@ -315,20 +315,13 @@ def render_wrapped_text(text, font, color, rect, surface, line_spacing=5, scroll
             current_line = word + " "
     lines.append(current_line)  # last line
 
-    line_height = font.get_height() + 5
-    total_height = len(lines)*line_height
-    max_scroll = max(0, total_height - rect.height)
-    scroll_offset = max(0, min(scroll_offset, max_scroll))
-
-    y = rect.y + 10 - scroll_offset  # top padding
+    y = rect.y + 20  # top padding
     for line in lines:
-        if y + line_height > rect.bottom:
+        if y + font.get_height() > rect.bottom:
             break
-        if y + line_height >= rect.top:
-            line_surface = font.render(line, True, color)
-            surface.blit(line_surface, (rect.x + 20, y))  # left padding
-        y += line_height
-    return max_scroll
+        line_surface = font.render(line, True, color)
+        surface.blit(line_surface, (rect.x + 20, y))  # left padding
+        y += line_surface.get_height() + line_spacing
 
 def draw_info():
     mouse_pos = pygame.mouse.get_pos()
@@ -611,7 +604,9 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
         # Check hover
         answer_rect = pygame.Rect(inner_box.x + 20, y_pos - 15, 600, 30)
         answer_rects.append(answer_rect)
-        if answer_rect.collidepoint(mouse_pos):
+        if answer_rect.collidepoint(mouse_pos) or selected_answer == i:
+            bg_color = (220, 220, 200)
+            pygame.draw.rect(display, bg_color, answer_rect)
             pygame.draw.circle(display, (150, 150, 150), circle_center, circle_radius + 2)
 
         # Draw filled if selected
@@ -1096,8 +1091,6 @@ while running:
                 user_text += event.unicode
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-
-
             if current_page == HOME_SCREEN and uploaded == False and upload_text_button_rect.collidepoint(event.pos):
                 current_page = UPLOAD
                 clicked_blocked = True
@@ -1190,21 +1183,6 @@ while running:
             if current_page == STATS and done_stats_button_rect.collidepoint(event.pos):
                 current_page = GAME_OVER
                 clicked_blocked = True
-            
-            if current_page == UPLOAD:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 4:  # Scroll up
-                        scroll_offset -= 20
-                elif event.button == 5:  # Scroll down
-                    scroll_offset += 20
-
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    scroll_offset -= 20
-                elif event.key == pygame.K_DOWN:
-                    scroll_offset += 20
-
-
 
 
         #play again -- uploaded is false
@@ -1221,8 +1199,7 @@ while running:
     elif current_page == UPLOAD:
         draw_upload()
         font = pygame.font.Font(None, 24)
-        render_wrapped_text(user_text, font, pygame.Color('black'), pygame.Rect(200, 80, 700, 460), display, scroll_offset)
-        
+        render_wrapped_text(user_text, font, pygame.Color('black'), pygame.Rect(200, 80, 700, 460), display)
     elif current_page == HOME_SCREEN_2:
         draw_home_screen()
     elif current_page == GENERATING_QUESTIONS:
