@@ -83,16 +83,16 @@ empty_cloud = pygame.image.load('final_sprites/cloud.png')
 empty_cloud = pygame.transform.scale(empty_cloud, (700, 500))
 
 earth_dino = pygame.image.load('final_sprites/earthDino.png')
-earth_dino = pygame.transform.scale(earth_dino, (300, 300))
+earth_dino = pygame.transform.scale(earth_dino, (100, 100))
 
 fire_dino = pygame.image.load('final_sprites/fireDino.png')
-fire_dino = pygame.transform.scale(fire_dino, (275, 275))
+fire_dino = pygame.transform.scale(fire_dino, (100, 100))
 
 air_dino = pygame.image.load('final_sprites/airDino.png')
-air_dino = pygame.transform.scale(air_dino, (300, 300))
+air_dino = pygame.transform.scale(air_dino, (100, 100))
 
 water_dino = pygame.image.load('final_sprites/waterDino.png')
-water_dino = pygame.transform.scale(water_dino, (300, 300))
+water_dino = pygame.transform.scale(water_dino, (100, 100))
 
 incorrect_sprite = pygame.image.load('final_sprites/ermActually.png')
 incorrect_sprite = pygame.transform.scale(incorrect_sprite, (100, 100))
@@ -110,7 +110,7 @@ bees = pygame.image.load('final_sprites/bees.png')
 bees = pygame.transform.scale(bees, (100, 100))
 
 bubbles = pygame.image.load('final_sprites/bubbles.png')
-bubbles = pygame.transform.scale(bubbles, (150, 150))
+bubbles = pygame.transform.scale(bubbles, (100, 100))
 
 # PAGE STATES #
 
@@ -128,7 +128,7 @@ REVIEW_TEXT = 11
 GAME_OVER = 12
 STATS = 13
 
-current_page = ATTACK
+current_page = BATTLE_BEGINS
 
 # BUTTONS #
 
@@ -158,7 +158,7 @@ continue_fighter_button_rect.topleft = (400, 400)
 
 #BATTLE BEGINS
 continue_battle_button_rect = button_image.get_rect()
-continue_battle_button_rect.topleft = (450, 450)
+continue_battle_button_rect.topleft = (300, 400)
 
 #QUESTION
 done_question_button_rect = button_image.get_rect()
@@ -170,7 +170,7 @@ done_result_button_rect.topleft = (300, 600)
 
 #YOU ATTACK
 continue_attack_button_rect = button_image.get_rect()
-continue_attack_button_rect.topleft = (450, 500)
+continue_attack_button_rect.topleft = (300, 500)
 
 #REVIEW TEXT
 done_review_button_rect = button_image.get_rect()
@@ -178,9 +178,9 @@ done_review_button_rect.topleft = (400, 400)
 
 #GAME OVER
 stats_button_rect = button_image.get_rect()
-stats_button_rect.topleft = (450, 500)
+stats_button_rect.topleft = (500, 400)
 play_again_button_rect = button_image.get_rect()
-play_again_button_rect.topleft = (450, 400)
+play_again_button_rect.topleft = (600, 400)
 
 #STATS
 done_stats_button_rect = button_image.get_rect()
@@ -224,7 +224,7 @@ choice_wrong_3 = AnswerChoice()
 max_rounds = 5
 turns = 0
 global score
-score = 5
+score = 0
 correct_ans = True
 answer_processed = False
 uploaded = False
@@ -293,11 +293,6 @@ def draw_battle_begins():
     mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
     
-    flipped_dino = pygame.transform.flip(fire_dino, True, False)
-    display.blit(flipped_dino, (700, 325))
-
-    display.blit(water_dino, (100, 300))
-
     if continue_battle_button_rect.collidepoint(mouse_pos):
         display.blit(hover_button_image, continue_battle_button_rect)
     else:
@@ -305,8 +300,8 @@ def draw_battle_begins():
     
     # Draw button text
     text_info = font.render("Continue", True, BLACK)
-    continue_rect = text_info.get_rect(center=continue_battle_button_rect.center)
-    display.blit(text_info, continue_rect)
+    text_info_rect = text_info.get_rect(center=info_button_rect.center)
+    display.blit(text_info, text_info_rect)
 
 def draw_question():
     pass
@@ -315,66 +310,13 @@ def draw_result():
     pass
 
 def draw_attack():
-    display.blit(bg_image_grey, (0, 0))
-
-    mouse_pos = pygame.mouse.get_pos()
-    font = pygame.font.Font(None, 36)
-    
-    flipped_dino = pygame.transform.flip(fire_dino, True, False)
-    display.blit(flipped_dino, (700, 325))
-
-    display.blit(water_dino, (100, 300))
-
-    if continue_attack_button_rect.collidepoint(mouse_pos):
-        display.blit(hover_button_image, continue_attack_button_rect)
-    else:
-        display.blit(button_image, continue_attack_button_rect)
-    
-    # Draw button text
-    text_info = font.render("Continue", True, BLACK)
-    continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
-    display.blit(text_info, continue_rect)
-
-    if correct_ans:
-        display.blit(bubbles, (150, 300))
-    else:
-        display.blit(meatball, (650, 300))
-
+    pass
 
 def draw_review():
     pass
 
 def draw_game_over():
-    display.blit(bg_image, (0, 0))
-    if score == 5:
-        display.blit(you_win_cloud,  (75, 15))
-    else:
-        display.blit(you_lose_cloud, (75, 15))
-
-    mouse_pos = pygame.mouse.get_pos()
-    font = pygame.font.Font(None, 36)
-    
-    if stats_button_rect.collidepoint(mouse_pos):
-        display.blit(hover_button_image, stats_button_rect)
-    else:
-        display.blit(button_image, stats_button_rect)
-
-    if play_again_button_rect.collidepoint(mouse_pos):
-        display.blit(hover_button_image, play_again_button_rect)
-    else:
-        display.blit(button_image, play_again_button_rect)
-    
-    # Draw button text
-    text_stats = font.render("Stats", True, BLACK)
-    stats_rect = text_stats.get_rect(center=stats_button_rect.center)
-    display.blit(text_stats, stats_rect)
-
-    text_again = font.render("Play Again", True, BLACK)
-    again_rect = text_again.get_rect(center=play_again_button_rect.center)
-    display.blit(text_again, again_rect)
-
-
-
+    pass
 
 def draw_stats():
     pass
