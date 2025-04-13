@@ -30,6 +30,8 @@ import json
 
 pygame.init()
 pygame.mixer.init()
+pygame.mixer.music.load("Cats.mp3")  # or .ogg
+pygame.mixer.music.play(-1)
 
 # GEMINI TEXT BOX #
 
@@ -129,7 +131,7 @@ REVIEW_TEXT = 11
 GAME_OVER = 12
 STATS = 13
 
-current_page = STATS
+current_page = ATTACK
 
 # BUTTONS #
 
@@ -368,6 +370,7 @@ def draw_result():
     display.blit(close_text, close_text_rect)
 
 def draw_attack():
+    global attacked
     display.blit(bg_image_grey, (0, 0))
 
     mouse_pos = pygame.mouse.get_pos()
@@ -387,25 +390,47 @@ def draw_attack():
     text_info = font.render("Continue", True, BLACK)
     continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
     display.blit(text_info, continue_rect)
+    if not attacked: 
+        if correct_ans:
+            clock = pygame.time.Clock()
+            start_pos = (150, 300)
+            end_pos = (650, 300)
+            duration = 120
+            frame = 0
 
-    if correct_ans:
-        clock = pygame.time.Clock()
-        start_pos = (150, 300)
-        end_pos = (650, 300)
-        duration = 120
-        frame = 0
+            while frame < duration:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
 
-        while frame < duration:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                t = frame / duration
+                x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
+                y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
 
-            t = frame / duration
-            x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
-            y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
+                # Redraw everything
+                display.blit(bg_image_grey, (0, 0))
+                flipped_dino = pygame.transform.flip(fire_dino, True, False)
+                display.blit(flipped_dino, (700, 325))
+                display.blit(water_dino, (100, 300))
 
-            # Redraw everything
+                if continue_attack_button_rect.collidepoint(mouse_pos):
+                    display.blit(hover_button_image, continue_attack_button_rect)
+                else:
+                    display.blit(button_image, continue_attack_button_rect)
+
+                # Only draw bubbles during animation
+                display.blit(bubbles, (x, y))
+                
+                text_info = font.render("Continue", True, BLACK)
+                continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+                display.blit(text_info, continue_rect)
+
+                pygame.display.update()
+                clock.tick(60)
+                frame += 1
+
+            # 🧹 Cleanup: Final frame with no bubbles
             display.blit(bg_image_grey, (0, 0))
             flipped_dino = pygame.transform.flip(fire_dino, True, False)
             display.blit(flipped_dino, (700, 325))
@@ -420,48 +445,48 @@ def draw_attack():
             continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
             display.blit(text_info, continue_rect)
 
-            # Only draw bubbles during animation
-            display.blit(bubbles, (x, y))
-
             pygame.display.update()
-            clock.tick(60)
-            frame += 1
 
-        # 🧹 Cleanup: Final frame with no bubbles
-        display.blit(bg_image_grey, (0, 0))
-        flipped_dino = pygame.transform.flip(fire_dino, True, False)
-        display.blit(flipped_dino, (700, 325))
-        display.blit(water_dino, (100, 300))
-
-        if continue_attack_button_rect.collidepoint(mouse_pos):
-            display.blit(hover_button_image, continue_attack_button_rect)
         else:
-            display.blit(button_image, continue_attack_button_rect)
+            clock = pygame.time.Clock()
+            start_pos = (650, 300)
+            end_pos = (150, 300)
+            duration = 120
+            frame = 0
 
-        text_info = font.render("Continue", True, BLACK)
-        continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
-        display.blit(text_info, continue_rect)
+            while frame < duration:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
 
-        pygame.display.update()
+                t = frame / duration
+                x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
+                y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
 
-    else:
-        clock = pygame.time.Clock()
-        start_pos = (650, 300)
-        end_pos = (150, 300)
-        duration = 120
-        frame = 0
+                # Redraw everything
+                display.blit(bg_image_grey, (0, 0))
+                flipped_dino = pygame.transform.flip(fire_dino, True, False)
+                display.blit(flipped_dino, (700, 325))
+                display.blit(water_dino, (100, 300))
 
-        while frame < duration:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                if continue_attack_button_rect.collidepoint(mouse_pos):
+                    display.blit(hover_button_image, continue_attack_button_rect)
+                else:
+                    display.blit(button_image, continue_attack_button_rect)
 
-            t = frame / duration
-            x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
-            y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
+                text_info = font.render("Continue", True, BLACK)
+                continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+                display.blit(text_info, continue_rect)
 
-            # Redraw everything
+                # Only draw bubbles during animation
+                display.blit(meatball, (x, y))
+
+                pygame.display.update()
+                clock.tick(60)
+                frame += 1
+
+            # 🧹 Cleanup: Final frame with no bubbles
             display.blit(bg_image_grey, (0, 0))
             flipped_dino = pygame.transform.flip(fire_dino, True, False)
             display.blit(flipped_dino, (700, 325))
@@ -476,30 +501,8 @@ def draw_attack():
             continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
             display.blit(text_info, continue_rect)
 
-            # Only draw bubbles during animation
-            display.blit(meatball, (x, y))
-
             pygame.display.update()
-            clock.tick(60)
-            frame += 1
-
-        # 🧹 Cleanup: Final frame with no bubbles
-        display.blit(bg_image_grey, (0, 0))
-        flipped_dino = pygame.transform.flip(fire_dino, True, False)
-        display.blit(flipped_dino, (700, 325))
-        display.blit(water_dino, (100, 300))
-
-        if continue_attack_button_rect.collidepoint(mouse_pos):
-            display.blit(hover_button_image, continue_attack_button_rect)
-        else:
-            display.blit(button_image, continue_attack_button_rect)
-
-        text_info = font.render("Continue", True, BLACK)
-        continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
-        display.blit(text_info, continue_rect)
-
-        pygame.display.update()
-
+    attacked = True
 
 def draw_review():
     pass
@@ -574,7 +577,7 @@ def draw_stats():
     display.blit(close_text, close_text_rect)
 
 # MAIN LOOP #
-
+attacked = False
 running = True
 while running:
     for event in pygame.event.get():
@@ -598,6 +601,7 @@ while running:
         draw_battle_begins()
     elif current_page == QUESTION:
         draw_question() #
+        attacked = False
     elif current_page == ANS_RESULT:
         draw_result()
     elif current_page == ATTACK:
