@@ -1,10 +1,17 @@
 import pygame
 import random
 import time
+import math
+import sys
 from google import genai
 client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
 
 import json
+
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("Cats.mp3")  # or .ogg
+pygame.mixer.music.play(-1)
 
 # GEMINI API FUNCTION #
 
@@ -150,11 +157,11 @@ begin_button_rect.topleft = (450, 400)
 
 #INFO
 close_button_rect = button_image.get_rect()
-close_button_rect.topleft = (450, 575)
+close_button_rect.topleft = (600, 400)
 
 #UPLOAD
 done_upload_button_rect = button_image.get_rect()
-done_upload_button_rect.topleft = (450, 575)
+done_upload_button_rect.topleft = (700, 400)
 
 #CHOOSE FIGHTER
 left_button_rect = button_image.get_rect()
@@ -162,7 +169,7 @@ left_button_rect.topleft = (600, 400)
 right_button_rect = button_image.get_rect()
 right_button_rect.topleft = (500, 400)
 continue_fighter_button_rect = button_image.get_rect()
-continue_fighter_button_rect.topleft = (450, 575)
+continue_fighter_button_rect.topleft = (400, 400)
 
 #BATTLE BEGINS
 continue_battle_button_rect = button_image.get_rect()
@@ -170,7 +177,7 @@ continue_battle_button_rect.topleft = (450, 450)
 
 #QUESTION
 done_question_button_rect = button_image.get_rect()
-done_question_button_rect.topleft = (450, 550)
+done_question_button_rect.topleft = (300, 500)
 
 #ANS_RESULT
 done_result_button_rect = button_image.get_rect()
@@ -178,11 +185,11 @@ done_result_button_rect.topleft = (450, 500)
 
 #YOU ATTACK
 continue_attack_button_rect = button_image.get_rect()
-continue_attack_button_rect.topleft = (450, 400)
+continue_attack_button_rect.topleft = (450, 575)
 
 #REVIEW TEXT
 done_review_button_rect = button_image.get_rect()
-done_review_button_rect.topleft = (450, 550)
+done_review_button_rect.topleft = (400, 400)
 
 #GAME OVER
 stats_button_rect = button_image.get_rect()
@@ -192,7 +199,7 @@ play_again_button_rect.topleft = (450, 400)
 
 #STATS
 done_stats_button_rect = button_image.get_rect()
-done_stats_button_rect.topleft = (700, 400)
+done_stats_button_rect.topleft = (450, 500)
 
 button_size = upload_text_button_rect.size
 
@@ -242,16 +249,15 @@ sprite_num = 0
 correct_ans = True
 answer_processed = False
 uploaded = False
-
 # PAGE DRAWING METHODS #
 
 def draw_home_screen():
     mouse_pos = pygame.mouse.get_pos()
-    print("Mouse:", mouse_pos)
-    if uploaded:
-        print("Upload rect:", upload_text_button_rect)
-    else: 
-        print("begin rect:", begin_button_rect)
+    #print("Mouse:", mouse_pos)
+    #if uploaded:
+    #    print("Upload rect:", upload_text_button_rect)
+    #else: 
+    #    print("begin rect:", begin_button_rect)
 
     display.blit(bg_image, (0, 0))
     display.blit(title_cloud, (75, 15))
@@ -406,7 +412,7 @@ def choose_enemy_sprite(num):
     if num == 1:
         return fire_dino
     if num == 2:
-        return earth_dino
+        return air_dino
     if num == 3:
         return water_dino
 
@@ -482,6 +488,7 @@ def draw_choose_fighter():
     continue_fighter_text = font.render("Continue", True, BLACK)
     continue_fighter_text_rect = continue_fighter_text.get_rect(center=continue_fighter_button_rect.center)
     display.blit(continue_fighter_text, continue_fighter_text_rect)
+    return left_triangle_rect, right_triangle_rect
 
 
 def draw_battle_begins():
@@ -541,7 +548,7 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
             pygame.draw.circle(display, BLACK, circle_center, circle_radius, 2)
 
         # Draw the answer text
-        answer_text = font.render(answer, True, BLACK)
+        answer_text = font.render(answer[turns], True, BLACK)
         display.blit(answer_text, (circle_center[0] + 20, y_pos - 12))
 
 
@@ -560,6 +567,35 @@ def draw_question(question_text = "placeholder", answers = ["placeholder - corre
     display.blit(sprite, (25, 400))
     display.blit(enemy_sprite, (750, 400))
 
+def draw_review(review_quote = "placeholder"):
+    global selected_answer
+    mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image_grey, (0, 0))
+    
+    font = pygame.font.Font(None, 32)
+    inner_box = pygame.Rect(200, 80, 700, 460)
+    pygame.draw.rect(display, WHITE, inner_box)  
+    pygame.draw.rect(display, (100, 100, 100), inner_box, 2)  
+    title_text = font.render("Text To Review:", True, BLACK)
+    display.blit(title_text, (inner_box.x + 300, inner_box.y + 20)) 
+    
+    render_wrapped_text(review_quote, font, BLACK, pygame.Rect(inner_box.x + 20, inner_box.y + 60, 660, 100), display)
+ 
+    if done_review_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_review_button_rect)
+    else:
+        display.blit(button_image, done_review_button_rect)
+ 
+    done_text = font.render("Done", True, BLACK)
+    text_rect = done_text.get_rect(center=done_review_button_rect.center)
+    display.blit(done_text, text_rect)
+ 
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    display.blit(sprite, (25, 400))
+    display.blit(enemy_sprite, (750, 400))
+    
 
 def draw_result():
     mouse_pos = pygame.mouse.get_pos()
@@ -598,9 +634,10 @@ def draw_result():
     display.blit(close_text, close_text_rect)
 
 def draw_attack():
-    mouse_pos = pygame.mouse.get_pos()
+    global attacked
     display.blit(bg_image_grey, (0, 0))
 
+    mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
     
     flipped_dino = pygame.transform.flip(fire_dino, True, False)
@@ -617,51 +654,160 @@ def draw_attack():
     text_info = font.render("Continue", True, BLACK)
     continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
     display.blit(text_info, continue_rect)
+    if not attacked: 
+        if correct_ans:
+            clock = pygame.time.Clock()
+            start_pos = (150, 300)
+            end_pos = (650, 300)
+            duration = 120
+            frame = 0
 
-    if correct_ans:
-        display.blit(bubbles, (150, 300))
-    else:
-        display.blit(meatball, (650, 300))
-    
+            while frame < duration:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
 
-def draw_review(review_quote = "placeholder"):
-    global selected_answer
-    mouse_pos = pygame.mouse.get_pos()
+                t = frame / duration
+                x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
+                y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
+
+                # Redraw everything
+                display.blit(bg_image_grey, (0, 0))
+                flipped_dino = pygame.transform.flip(fire_dino, True, False)
+                display.blit(flipped_dino, (700, 325))
+                display.blit(water_dino, (100, 300))
+
+                if continue_attack_button_rect.collidepoint(mouse_pos):
+                    display.blit(hover_button_image, continue_attack_button_rect)
+                else:
+                    display.blit(button_image, continue_attack_button_rect)
+
+                # Only draw bubbles during animation
+                display.blit(bubbles, (x, y))
+                
+                text_info = font.render("Continue", True, BLACK)
+                continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+                display.blit(text_info, continue_rect)
+
+                pygame.display.update()
+                clock.tick(60)
+                frame += 1
+
+            # 🧹 Cleanup: Final frame with no bubbles
+            display.blit(bg_image_grey, (0, 0))
+            flipped_dino = pygame.transform.flip(fire_dino, True, False)
+            display.blit(flipped_dino, (700, 325))
+            display.blit(water_dino, (100, 300))
+
+            if continue_attack_button_rect.collidepoint(mouse_pos):
+                display.blit(hover_button_image, continue_attack_button_rect)
+            else:
+                display.blit(button_image, continue_attack_button_rect)
+
+            text_info = font.render("Continue", True, BLACK)
+            continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+            display.blit(text_info, continue_rect)
+
+            pygame.display.update()
+
+        else:
+            clock = pygame.time.Clock()
+            start_pos = (650, 300)
+            end_pos = (150, 300)
+            duration = 120
+            frame = 0
+
+            while frame < duration:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+
+                t = frame / duration
+                x = int(start_pos[0] * (1 - t) + end_pos[0] * t)
+                y = int(start_pos[1] * (1 - t) + end_pos[1] * t)
+
+                # Redraw everything
+                display.blit(bg_image_grey, (0, 0))
+                flipped_dino = pygame.transform.flip(fire_dino, True, False)
+                display.blit(flipped_dino, (700, 325))
+                display.blit(water_dino, (100, 300))
+
+                if continue_attack_button_rect.collidepoint(mouse_pos):
+                    display.blit(hover_button_image, continue_attack_button_rect)
+                else:
+                    display.blit(button_image, continue_attack_button_rect)
+
+                text_info = font.render("Continue", True, BLACK)
+                continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+                display.blit(text_info, continue_rect)
+
+                # Only draw bubbles during animation
+                display.blit(meatball, (x, y))
+
+                pygame.display.update()
+                clock.tick(60)
+                frame += 1
+
+            # 🧹 Cleanup: Final frame with no bubbles
+            display.blit(bg_image_grey, (0, 0))
+            flipped_dino = pygame.transform.flip(fire_dino, True, False)
+            display.blit(flipped_dino, (700, 325))
+            display.blit(water_dino, (100, 300))
+
+            if continue_attack_button_rect.collidepoint(mouse_pos):
+                display.blit(hover_button_image, continue_attack_button_rect)
+            else:
+                display.blit(button_image, continue_attack_button_rect)
+
+            text_info = font.render("Continue", True, BLACK)
+            continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+            display.blit(text_info, continue_rect)
+
+            pygame.display.update()
+    attacked = True
+
+def draw_stats():
     display.blit(bg_image_grey, (0, 0))
 
-    font = pygame.font.Font(None, 32)
+    flipped_dino = pygame.transform.flip(fire_dino, True, False)
+    temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
+    display.blit(temp_fire, (900, 350))
 
-    inner_box = pygame.Rect(200, 80, 700, 460)
-    pygame.draw.rect(display, WHITE, inner_box)  
-    pygame.draw.rect(display, (100, 100, 100), inner_box, 2)  
-    title_text = font.render("Text To Review:", True, BLACK)
-    display.blit(title_text, (inner_box.x + 300, inner_box.y + 20)) 
+    temp_water = pygame.transform.scale(water_dino, (200, 200))
+    display.blit(temp_water, (0, 300))
 
-    render_wrapped_text(review_quote, font, BLACK, pygame.Rect(inner_box.x + 20, inner_box.y + 60, 660, 100), display)
+    mouse_pos = pygame.mouse.get_pos()
+    font = pygame.font.Font(None, 36)
 
-    if done_review_button_rect.collidepoint(mouse_pos):
-        display.blit(hover_button_image, done_review_button_rect)
+    result_rect = pygame.Rect(200, 100, 700, 500)  
+    pygame.draw.rect(display, (255, 255, 255), result_rect) 
+    pygame.draw.rect(display, (0, 0, 0), result_rect, 2)
+
+#****** TO DO: Text to Review ******
+#quotes = ...
+    result_text = ("Stats\n\n" + str(score) + "/5 Questions Correct\n\n\nText to Review:\n\n(quotes)")
+    render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
+
+    if done_stats_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_stats_button_rect)
     else:
-        display.blit(button_image, done_review_button_rect)
-
-    done_text = font.render("Done", True, BLACK)
-    text_rect = done_text.get_rect(center=done_review_button_rect.center)
-    display.blit(done_text, text_rect)
-
-    sprite = choose_player_sprite(sprite_num)
-    enemy_sprite = choose_enemy_sprite(sprite_num)
-    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
-    display.blit(sprite, (25, 400))
-    display.blit(enemy_sprite, (750, 400))
+        display.blit(button_image, done_stats_button_rect)
+    
+    # Draw button text
+    close_text = font.render("Done", True, BLACK)
+    close_text_rect = close_text.get_rect(center=done_stats_button_rect.center)
+    display.blit(close_text, close_text_rect)
 
 def draw_game_over():
-    mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image, (0, 0))
     if score == 5:
         display.blit(you_win_cloud,  (75, 15))
     else:
         display.blit(you_lose_cloud, (75, 15))
 
+    mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
     
     if stats_button_rect.collidepoint(mouse_pos):
@@ -683,49 +829,57 @@ def draw_game_over():
     again_rect = text_again.get_rect(center=play_again_button_rect.center)
     display.blit(text_again, again_rect)
 
-def draw_stats():
-    pass
-
 # MAIN LOOP #
 
 running = True
 input_active = False
+click_blocked = False
+generating_screen_start_time = None
+attacked = False
 while running:
+    if click_blocked:
+        pygame.event.clear(pygame.MOUSEBUTTONDOWN)  # clear stale clicks
+        click_blocked = False
+        continue
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.KEYDOWN and input_active and current_page == UPLOAD:
-            if event.key == pygame.K_RETURN:
-                texts = user_text
-                user_text = ""  # clear after Enter
-                current_page = HOME_SCREEN
+        if event.type == pygame.KEYDOWN and current_page == UPLOAD:
                 
-            elif event.key == pygame.K_BACKSPACE:
+            if event.key == pygame.K_BACKSPACE:
                 user_text = user_text[:-1]
             else:
                 user_text += event.unicode
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if current_page == HOME_SCREEN and upload_text_button_rect.collidepoint(event.pos):
-                print("Clicked Upload!")
+            if current_page == HOME_SCREEN and uploaded == False and upload_text_button_rect.collidepoint(event.pos):
+                #print("Clicked Upload!")
                 current_page = UPLOAD
+                clicked_blocked = True
 
             if current_page == HOME_SCREEN and info_button_rect.collidepoint(event.pos):
                 current_page = INFO
+                clicked_blocked = True
 
-            if current_page == HOME_SCREEN and begin_button_rect.collidepoint(event.pos):
+            if current_page == HOME_SCREEN and uploaded == True and begin_button_rect.collidepoint(event.pos):
                 current_page = GENERATING_QUESTIONS
+                generating_screen_start_time = pygame.time.get_ticks()
+                question,options,answer,highlights = fun(user_text)
+                clicked_blocked = True
 
             if current_page == UPLOAD and done_upload_button_rect.collidepoint(event.pos):
                 uploaded = True
                 current_page = HOME_SCREEN
+                clicked_blocked = True
 
             if current_page == INFO and close_button_rect.collidepoint(event.pos):
                 current_page = HOME_SCREEN
+                clicked_blocked = True
 
             if current_page == CHOOSE_FIGHTER and continue_fighter_button_rect.collidepoint(event.pos):
                 current_page = BATTLE_BEGINS
+                clicked_blocked = True
 
             if current_page == CHOOSE_FIGHTER and left_button_rect.collidepoint(event.pos):
                 sprite_num -= 1
@@ -738,31 +892,43 @@ while running:
 
             if current_page == BATTLE_BEGINS and continue_battle_button_rect.collidepoint(event.pos):
                 current_page = QUESTION
+                clicked_blocked = True
 
             if current_page == QUESTION and done_question_button_rect.collidepoint(event.pos):
                 turns += 1
                 current_page = ANS_RESULT
+                clicked_blocked = True
 
             if current_page == ANS_RESULT and done_result_button_rect.collidepoint(event.pos):
-                current_page = ATTACK
+                if turns > 4:
+                    current_page = GAME_OVER
+                else:
+                    current_page = ATTACK
+                clicked_blocked = True
 
             if current_page == ATTACK and continue_attack_button_rect.collidepoint(event.pos):
                 if turns > 4:
                     current_page = GAME_OVER
+                    clicked_blocked = True
                 elif correct_ans:
                     score += 1
                     current_page = QUESTION
+                    clicked_blocked = True
                 else:
                     current_page = REVIEW_TEXT
+                    clicked_blocked = True
 
             if current_page == REVIEW_TEXT and done_review_button_rect.collidepoint(event.pos):
                 if turns > 4:
                     current_page = GAME_OVER
+                    clicked_blocked = True
                 else:
                     current_page = QUESTION
+                    clicked_blocked = True
 
             if current_page == GAME_OVER and stats_button_rect.collidepoint(event.pos):
                 current_page = STATS
+                clicked_blocked = True
 
             if current_page == GAME_OVER and play_again_button_rect.collidepoint(event.pos):
                 uploaded = False
@@ -770,35 +936,57 @@ while running:
                 score = 0
                 sprite_num = 0
                 current_page = HOME_SCREEN
+                clicked_blocked = True
 
             if current_page == STATS and done_stats_button_rect.collidepoint(event.pos):
                 current_page = GAME_OVER
+                clicked_blocked = True
 
 
         #play again -- uploaded is false
-    
+    if current_page == GENERATING_QUESTIONS and generating_screen_start_time is not None:
+        if pygame.time.get_ticks() - generating_screen_start_time >= 3000:  # 3 seconds
+            current_page = CHOOSE_FIGHTER
+            generating_screen_start_time = None  # reset timer
+            click_blocked = True
+
     if current_page == HOME_SCREEN:
         draw_home_screen()
     elif current_page == INFO:
         draw_info()
     elif current_page == UPLOAD:
         draw_upload()
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render(user_text, True, pygame.Color('white'))
+        display.blit(text_surface, (uploadbox.x + 10, uploadbox.y + 10))
     elif current_page == HOME_SCREEN_2:
         draw_home_screen()
     elif current_page == GENERATING_QUESTIONS:
         draw_generating_questions()
     elif current_page == CHOOSE_FIGHTER:
-        draw_choose_fighter()
+        left_triangle_rect, right_triangle_rect = draw_choose_fighter()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if left_triangle_rect.collidepoint(event.pos):
+                sprite_num -= 1
+            if sprite_num < 0:
+                sprite_num = 3
+
+            if right_triangle_rect.collidepoint(event.pos):
+                sprite_num += 1
+            if sprite_num > 3:
+                sprite_num = 0
+
     elif current_page == BATTLE_BEGINS:
         draw_battle_begins()
     elif current_page == QUESTION:
-        draw_question() #
+        draw_question(question[turns], options) 
+        attacked = False
     elif current_page == ANS_RESULT:
         draw_result()
     elif current_page == ATTACK:
         draw_attack() #need status of who was correct last
     elif current_page == REVIEW_TEXT:
-        draw_review()
+        draw_review(highlights)
     elif current_page == GAME_OVER:
         draw_game_over()
     elif current_page == STATS:
