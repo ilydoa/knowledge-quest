@@ -136,7 +136,7 @@ REVIEW_TEXT = 11
 GAME_OVER = 12
 STATS = 13
 
-current_page = BATTLE_BEGINS
+current_page = HOME_SCREEN
 
 # BUTTONS #
 
@@ -170,25 +170,25 @@ continue_battle_button_rect.topleft = (450, 450)
 
 #QUESTION
 done_question_button_rect = button_image.get_rect()
-done_question_button_rect.topleft = (300, 500)
+done_question_button_rect.topleft = (450, 550)
 
 #ANS_RESULT
 done_result_button_rect = button_image.get_rect()
-done_result_button_rect.topleft = (300, 600)
+done_result_button_rect.topleft = (450, 500)
 
 #YOU ATTACK
 continue_attack_button_rect = button_image.get_rect()
-continue_attack_button_rect.topleft = (300, 700)
+continue_attack_button_rect.topleft = (450, 400)
 
 #REVIEW TEXT
 done_review_button_rect = button_image.get_rect()
-done_review_button_rect.topleft = (400, 400)
+done_review_button_rect.topleft = (450, 550)
 
 #GAME OVER
 stats_button_rect = button_image.get_rect()
-stats_button_rect.topleft = (500, 400)
+stats_button_rect.topleft = (450, 500)
 play_again_button_rect = button_image.get_rect()
-play_again_button_rect.topleft = (600, 400)
+play_again_button_rect.topleft = (450, 400)
 
 #STATS
 done_stats_button_rect = button_image.get_rect()
@@ -246,10 +246,17 @@ uploaded = False
 # PAGE DRAWING METHODS #
 
 def draw_home_screen():
+    mouse_pos = pygame.mouse.get_pos()
+    print("Mouse:", mouse_pos)
+    if uploaded:
+        print("Upload rect:", upload_text_button_rect)
+    else: 
+        print("begin rect:", begin_button_rect)
+
     display.blit(bg_image, (0, 0))
     display.blit(title_cloud, (75, 15))
 
-    mouse_pos = pygame.mouse.get_pos()
+    
     font = pygame.font.Font(None, 36)
 
     if uploaded:
@@ -305,9 +312,10 @@ def render_wrapped_text(text, font, color, rect, surface, line_spacing=5):
         y += line_surface.get_height() + line_spacing
 
 def draw_info():
+    mouse_pos = pygame.mouse.get_pos()
+
     display.blit(bg_image_grey, (0, 0))
 
-    mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
 
     info_rect = pygame.Rect(200, 100, 700, 500)  
@@ -331,8 +339,9 @@ def draw_info():
     display.blit(close_text, close_text_rect)
 
 def draw_upload():
-    display.blit(bg_image_grey, (0, 0))
     mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image_grey, (0, 0))
+    
 
     outer_box = pygame.Rect(180, 30, 740, 540) 
     pygame.draw.rect(display, (200, 200, 200), outer_box)   
@@ -362,10 +371,10 @@ last_update = pygame.time.get_ticks()
 char_delay = 100  
 
 def draw_generating_questions():
+    mouse_pos = pygame.mouse.get_pos()
     global visible_chars, last_update
 
     display.blit(bg_image, (0, 0))
-    mouse_pos = pygame.mouse.get_pos()
 
     text_box = pygame.Rect(150, 250, 700, 100)
     pygame.draw.rect(display, WHITE, text_box)
@@ -403,6 +412,7 @@ def choose_enemy_sprite(num):
 
 
 def draw_choose_fighter():
+    mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image_grey, (0, 0))
     display.blit(choose_fighter_cloud, (75, 15))
 
@@ -475,10 +485,10 @@ def draw_choose_fighter():
 
 
 def draw_battle_begins():
+    mouse_pos = pygame.mouse.get_pos()
     display.blit(bg_image, (0, 0))
     display.blit(battle_cloud, (75, 15))
 
-    mouse_pos = pygame.mouse.get_pos()
     font = pygame.font.Font(None, 36)
     
     flipped_dino = pygame.transform.flip(fire_dino, True, False)
@@ -496,20 +506,182 @@ def draw_battle_begins():
     continue_rect = text_info.get_rect(center=continue_battle_button_rect.center)
     display.blit(text_info, continue_rect)
 
-def draw_question():
-    pass
+selected_answer = -1
+def draw_question(question_text = "placeholder", answers = ["placeholder - correct", "placeholder", "placeholder", "placeholder"]):
+    global selected_answer
+    mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image_grey, (0, 0))
+
+    font = pygame.font.Font(None, 32)
+
+    inner_box = pygame.Rect(200, 80, 700, 460)
+    pygame.draw.rect(display, WHITE, inner_box)  
+    pygame.draw.rect(display, (100, 100, 100), inner_box, 2)  
+    title_text = font.render("Question:", True, BLACK)
+    display.blit(title_text, (inner_box.x + 300, inner_box.y + 20)) 
+
+    render_wrapped_text(question_text, font, BLACK, pygame.Rect(inner_box.x + 20, inner_box.y + 60, 660, 100), display)
+
+    start_y = inner_box.y + 180
+    circle_radius = 10
+
+    for i, answer in enumerate(answers):
+        y_pos = start_y + i * 60
+        circle_center = (inner_box.x + 30, y_pos)
+
+        # Check hover
+        answer_rect = pygame.Rect(inner_box.x + 20, y_pos - 15, 600, 30)
+        if answer_rect.collidepoint(mouse_pos):
+            pygame.draw.circle(display, (150, 150, 150), circle_center, circle_radius + 2)
+
+        # Draw filled if selected
+        if selected_answer == i:
+            pygame.draw.circle(display, BLACK, circle_center, circle_radius)
+        else:
+            pygame.draw.circle(display, BLACK, circle_center, circle_radius, 2)
+
+        # Draw the answer text
+        answer_text = font.render(answer, True, BLACK)
+        display.blit(answer_text, (circle_center[0] + 20, y_pos - 12))
+
+
+    if done_question_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_question_button_rect)
+    else:
+        display.blit(button_image, done_question_button_rect)
+
+    done_text = font.render("Done", True, BLACK)
+    text_rect = done_text.get_rect(center=done_question_button_rect.center)
+    display.blit(done_text, text_rect)
+
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    display.blit(sprite, (25, 400))
+    display.blit(enemy_sprite, (750, 400))
+
 
 def draw_result():
-    pass
+    mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image_grey, (0, 0))
+
+    flipped_dino = pygame.transform.flip(fire_dino, True, False)
+    temp_fire = pygame.transform.scale(flipped_dino, (200, 200))
+    display.blit(temp_fire, (900, 350))
+
+    temp_water = pygame.transform.scale(water_dino, (200, 200))
+    display.blit(temp_water, (0, 300))
+
+    font = pygame.font.Font(None, 36)
+
+    result_rect = pygame.Rect(200, 100, 700, 500)  
+    pygame.draw.rect(display, (255, 255, 255), result_rect) 
+    pygame.draw.rect(display, (0, 0, 0), result_rect, 2)   
+    result_text = ""
+    if correct_ans:
+        display.blit(correct_sprite, (350, 125))
+        result_text = "Correct Answer!"
+    else:
+        display.blit(incorrect_sprite, (350, 125))
+        result_text = "erm actually..."
+
+    render_wrapped_text(result_text, font, (0, 0, 0), result_rect, display)
+
+    if done_result_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_result_button_rect)
+    else:
+        display.blit(button_image, done_result_button_rect)
+    
+    # Draw button text
+    close_text = font.render("Done", True, BLACK)
+    close_text_rect = close_text.get_rect(center=done_result_button_rect.center)
+    display.blit(close_text, close_text_rect)
 
 def draw_attack():
-    pass
+    mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image_grey, (0, 0))
 
-def draw_review():
-    pass
+    font = pygame.font.Font(None, 36)
+    
+    flipped_dino = pygame.transform.flip(fire_dino, True, False)
+    display.blit(flipped_dino, (700, 325))
+
+    display.blit(water_dino, (100, 300))
+
+    if continue_attack_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, continue_attack_button_rect)
+    else:
+        display.blit(button_image, continue_attack_button_rect)
+    
+    # Draw button text
+    text_info = font.render("Continue", True, BLACK)
+    continue_rect = text_info.get_rect(center=continue_attack_button_rect.center)
+    display.blit(text_info, continue_rect)
+
+    if correct_ans:
+        display.blit(bubbles, (150, 300))
+    else:
+        display.blit(meatball, (650, 300))
+    
+
+def draw_review(review_quote = "placeholder"):
+    global selected_answer
+    mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image_grey, (0, 0))
+
+    font = pygame.font.Font(None, 32)
+
+    inner_box = pygame.Rect(200, 80, 700, 460)
+    pygame.draw.rect(display, WHITE, inner_box)  
+    pygame.draw.rect(display, (100, 100, 100), inner_box, 2)  
+    title_text = font.render("Text To Review:", True, BLACK)
+    display.blit(title_text, (inner_box.x + 300, inner_box.y + 20)) 
+
+    render_wrapped_text(review_quote, font, BLACK, pygame.Rect(inner_box.x + 20, inner_box.y + 60, 660, 100), display)
+
+    if done_review_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, done_review_button_rect)
+    else:
+        display.blit(button_image, done_review_button_rect)
+
+    done_text = font.render("Done", True, BLACK)
+    text_rect = done_text.get_rect(center=done_review_button_rect.center)
+    display.blit(done_text, text_rect)
+
+    sprite = choose_player_sprite(sprite_num)
+    enemy_sprite = choose_enemy_sprite(sprite_num)
+    enemy_sprite = pygame.transform.flip(enemy_sprite, True, False)
+    display.blit(sprite, (25, 400))
+    display.blit(enemy_sprite, (750, 400))
 
 def draw_game_over():
-    pass
+    mouse_pos = pygame.mouse.get_pos()
+    display.blit(bg_image, (0, 0))
+    if score == 5:
+        display.blit(you_win_cloud,  (75, 15))
+    else:
+        display.blit(you_lose_cloud, (75, 15))
+
+    font = pygame.font.Font(None, 36)
+    
+    if stats_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, stats_button_rect)
+    else:
+        display.blit(button_image, stats_button_rect)
+
+    if play_again_button_rect.collidepoint(mouse_pos):
+        display.blit(hover_button_image, play_again_button_rect)
+    else:
+        display.blit(button_image, play_again_button_rect)
+    
+    # Draw button text
+    text_stats = font.render("Stats", True, BLACK)
+    stats_rect = text_stats.get_rect(center=stats_button_rect.center)
+    display.blit(text_stats, stats_rect)
+
+    text_again = font.render("Play Again", True, BLACK)
+    again_rect = text_again.get_rect(center=play_again_button_rect.center)
+    display.blit(text_again, again_rect)
 
 def draw_stats():
     pass
@@ -517,11 +689,93 @@ def draw_stats():
 # MAIN LOOP #
 
 running = True
+input_active = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        #if other
+
+        if event.type == pygame.KEYDOWN and input_active and current_page == UPLOAD:
+            if event.key == pygame.K_RETURN:
+                texts = user_text
+                user_text = ""  # clear after Enter
+                current_page = HOME_SCREEN
+                
+            elif event.key == pygame.K_BACKSPACE:
+                user_text = user_text[:-1]
+            else:
+                user_text += event.unicode
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if current_page == HOME_SCREEN and upload_text_button_rect.collidepoint(event.pos):
+                print("Clicked Upload!")
+                current_page = UPLOAD
+
+            if current_page == HOME_SCREEN and info_button_rect.collidepoint(event.pos):
+                current_page = INFO
+
+            if current_page == HOME_SCREEN and begin_button_rect.collidepoint(event.pos):
+                current_page = GENERATING_QUESTIONS
+
+            if current_page == UPLOAD and done_upload_button_rect.collidepoint(event.pos):
+                uploaded = True
+                current_page = HOME_SCREEN
+
+            if current_page == INFO and close_button_rect.collidepoint(event.pos):
+                current_page = HOME_SCREEN
+
+            if current_page == CHOOSE_FIGHTER and continue_fighter_button_rect.collidepoint(event.pos):
+                current_page = BATTLE_BEGINS
+
+            if current_page == CHOOSE_FIGHTER and left_button_rect.collidepoint(event.pos):
+                sprite_num -= 1
+                if sprite_num < 0:
+                    sprite_num = 3
+
+            if current_page == CHOOSE_FIGHTER and right_button_rect.collidepoint(event.pos):
+                if sprite_num > 3:
+                    sprite_num = 0
+
+            if current_page == BATTLE_BEGINS and continue_battle_button_rect.collidepoint(event.pos):
+                current_page = QUESTION
+
+            if current_page == QUESTION and done_question_button_rect.collidepoint(event.pos):
+                turns += 1
+                current_page = ANS_RESULT
+
+            if current_page == ANS_RESULT and done_result_button_rect.collidepoint(event.pos):
+                current_page = ATTACK
+
+            if current_page == ATTACK and continue_attack_button_rect.collidepoint(event.pos):
+                if turns > 4:
+                    current_page = GAME_OVER
+                elif correct_ans:
+                    score += 1
+                    current_page = QUESTION
+                else:
+                    current_page = REVIEW_TEXT
+
+            if current_page == REVIEW_TEXT and done_review_button_rect.collidepoint(event.pos):
+                if turns > 4:
+                    current_page = GAME_OVER
+                else:
+                    current_page = QUESTION
+
+            if current_page == GAME_OVER and stats_button_rect.collidepoint(event.pos):
+                current_page = STATS
+
+            if current_page == GAME_OVER and play_again_button_rect.collidepoint(event.pos):
+                uploaded = False
+                turns = 0
+                score = 0
+                sprite_num = 0
+                current_page = HOME_SCREEN
+
+            if current_page == STATS and done_stats_button_rect.collidepoint(event.pos):
+                current_page = GAME_OVER
+
+
+        #play again -- uploaded is false
     
     if current_page == HOME_SCREEN:
         draw_home_screen()
