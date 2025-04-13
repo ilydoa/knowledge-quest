@@ -12,7 +12,7 @@ import json
 pygame.init()
 pygame.scrap.init()
 pygame.mixer.init()
-pygame.mixer.music.load("Cats.mp3")  # or .ogg
+pygame.mixer.music.load("dinos_game.mp3")  # or .ogg
 pygame.mixer.music.play(-1)
 
 # GEMINI API FUNCTION #
