@@ -5,7 +5,7 @@ import math
 import sys
 import pyperclip
 from google import genai
-client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
+client = genai.Client(api_key ='enter-api-key-here')
 
 import json
 
