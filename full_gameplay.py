@@ -3,7 +3,6 @@ import random
 import time
 import math
 import sys
-import pyperclip
 from google import genai
 client = genai.Client(api_key ='enter your API key here')
 
@@ -151,11 +150,11 @@ current_page = HOME_SCREEN
 
 #HOME SCREEN
 upload_text_button_rect = button_image.get_rect()
-upload_text_button_rect.topleft = (450, 400)
+upload_text_button_rect.topleft = (300, 400)
 info_button_rect = button_image.get_rect()
-info_button_rect.topleft = (450, 500)
+info_button_rect.topleft = (600, 400)
 begin_button_rect = button_image.get_rect()
-begin_button_rect.topleft = (450, 400)
+begin_button_rect.topleft = (300, 400)
 
 #INFO
 close_button_rect = button_image.get_rect()
@@ -1106,12 +1105,19 @@ while running:
                 current_page = QUESTION
                 clicked_blocked = True
 
+            if current_page == QUESTION:
+                answer_rects = draw_question(question[turns], options[turns])
+                for i, rect in enumerate(answer_rects):
+                    if rect.collidepoint(event.pos):
+                        selected_answer = i
+
             if current_page == QUESTION and done_question_button_rect.collidepoint(event.pos):
-                correct_ans = selected_answer == answer[turns]
+                correct_ans = options[turns][selected_answer] == answer[turns]
                 #print(selected_answer)
                 #print(answer[turns])
                 turns += 1
                 selected_answer = None
+                attacked = False
                 current_page = ANS_RESULT
                 clicked_blocked = True
 
@@ -1124,15 +1130,13 @@ while running:
                     if correct_ans:
                         score += 1
                     current_page = GAME_OVER
-                    clicked_blocked = True
                 elif correct_ans:
                     score += 1
                     #selected_answer = None
                     current_page = QUESTION
-                    clicked_blocked = True
                 else:
                     current_page = REVIEW_TEXT
-                    clicked_blocked = True
+                clicked_blocked = True
 
             if current_page == REVIEW_TEXT and done_review_button_rect.collidepoint(event.pos):
                 if turns > 4:
@@ -1186,15 +1190,7 @@ while running:
     elif current_page == BATTLE_BEGINS:
         draw_battle_begins()
     elif current_page == QUESTION:
-        #selected_answer = None
-        answer_rects = draw_question(question[turns], options[turns]) 
-        attacked = False
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for i, rect in enumerate(answer_rects):
-                if rect.collidepoint(event.pos):
-                    
-                    selected_answer = options[turns][i]  # 👈 record which one they picked
+        answer_rects = draw_question(question[turns], options[turns])
     elif current_page == ANS_RESULT:
         draw_result()
     elif current_page == ATTACK:
