@@ -5,7 +5,7 @@ import math
 import sys
 import pyperclip
 from google import genai
-client = genai.Client(api_key ='AIzaSyA76gxgHIN4kRsPMb_6KhLNO_Vq05W5tXE')
+client = genai.Client(api_key ='enter your API key here')
 
 import json
 
@@ -447,7 +447,7 @@ def draw_choose_fighter():
         display.blit(sprite, (50, 300 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     elif sprite_num == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(sprite, (25, 325 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
         display.blit(sprite, (50, 350 + bob_offset))
@@ -455,7 +455,7 @@ def draw_choose_fighter():
     
 
     sprite_x, sprite_y = 50, 300
-    sprite_width, sprite_height = sprite.get_width(), sprite.get_height()
+    sprite_width, sprite_height = water_dino.get_width(), water_dino.get_height()
 
 
     center_y = sprite_y + sprite_height // 2
@@ -530,7 +530,7 @@ def draw_battle_begins():
         display.blit(sprite, (50, 300 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     elif sprite_num == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(sprite, (25, 325 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
         display.blit(sprite, (50, 350 + bob_offset))
@@ -734,7 +734,7 @@ def draw_attack():
         display.blit(sprite, (50, 300 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     elif sprite_num == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(sprite, (25, 325 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
         display.blit(sprite, (50, 350 + bob_offset))
@@ -753,7 +753,7 @@ def draw_attack():
         if correct_ans:
             clock = pygame.time.Clock()
             start_pos = (150, 300)
-            end_pos = (650, 300)
+            end_pos = (800, 300)
             duration = 120
             frame = 0
 
@@ -780,7 +780,7 @@ def draw_attack():
                     display.blit(sprite, (50, 300 + bob_offset))
                     display.blit(enemy_sprite, (800, 350 + bob_offset))
                 elif sprite_num == 2:
-                    display.blit(sprite, (25, 300 + bob_offset))
+                    display.blit(sprite, (25, 325 + bob_offset))
                     display.blit(enemy_sprite, (800, 350 + bob_offset))
                 else:
                     display.blit(sprite, (50, 350 + bob_offset))
@@ -823,7 +823,7 @@ def draw_attack():
                 display.blit(sprite, (50, 300 + bob_offset))
                 display.blit(enemy_sprite, (800, 350 + bob_offset))
             elif sprite_num == 2:
-                display.blit(sprite, (25, 300 + bob_offset))
+                display.blit(sprite, (25, 325 + bob_offset))
                 display.blit(enemy_sprite, (800, 350 + bob_offset))
             else:
                 display.blit(sprite, (50, 350 + bob_offset))
@@ -842,7 +842,7 @@ def draw_attack():
 
         else:
             clock = pygame.time.Clock()
-            start_pos = (650, 300)
+            start_pos = (800, 300)
             end_pos = (150, 300)
             duration = 120
             frame = 0
@@ -870,7 +870,7 @@ def draw_attack():
                     display.blit(sprite, (50, 300 + bob_offset))
                     display.blit(enemy_sprite, (800, 350 + bob_offset))
                 elif sprite_num == 2:
-                    display.blit(sprite, (25, 300 + bob_offset))
+                    display.blit(sprite, (25, 325 + bob_offset))
                     display.blit(enemy_sprite, (800, 350 + bob_offset))
                 else:
                     display.blit(sprite, (50, 350 + bob_offset))
@@ -912,7 +912,7 @@ def draw_attack():
                 display.blit(sprite, (50, 300 + bob_offset))
                 display.blit(enemy_sprite, (800, 350 + bob_offset))
             elif sprite_num == 2:
-                display.blit(sprite, (25, 300 + bob_offset))
+                display.blit(sprite, (25, 310 + bob_offset))
                 display.blit(enemy_sprite, (800, 350 + bob_offset))
             else:
                 display.blit(sprite, (50, 350 + bob_offset))
@@ -1024,7 +1024,7 @@ def draw_game_over():
         display.blit(sprite, (50, 300 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     elif sprite_num == 2:
-        display.blit(sprite, (25, 300 + bob_offset))
+        display.blit(sprite, (25, 325 + bob_offset))
         display.blit(enemy_sprite, (800, 350 + bob_offset))
     else:
         display.blit(sprite, (50, 350 + bob_offset))
@@ -1089,15 +1089,18 @@ while running:
                 current_page = BATTLE_BEGINS
                 clicked_blocked = True
 
-            if current_page == CHOOSE_FIGHTER and left_button_rect.collidepoint(event.pos):
-                sprite_num -= 1
+            if current_page == CHOOSE_FIGHTER:
+                left_triangle_rect, right_triangle_rect = draw_choose_fighter()
+                if left_triangle_rect.collidepoint(event.pos):
+                    sprite_num -= 1
                 if sprite_num < 0:
                     sprite_num = 3
 
-            if current_page == CHOOSE_FIGHTER and right_button_rect.collidepoint(event.pos):
+                if right_triangle_rect.collidepoint(event.pos):
+                    sprite_num += 1
                 if sprite_num > 3:
                     sprite_num = 0
-
+            
             if current_page == BATTLE_BEGINS and continue_battle_button_rect.collidepoint(event.pos):
                 selected_answer = None
                 current_page = QUESTION
@@ -1180,17 +1183,6 @@ while running:
         draw_generating_questions()
     elif current_page == CHOOSE_FIGHTER:
         left_triangle_rect, right_triangle_rect = draw_choose_fighter()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if left_triangle_rect.collidepoint(event.pos):
-                sprite_num -= 1
-            if sprite_num < 0:
-                sprite_num = 3
-
-            if right_triangle_rect.collidepoint(event.pos):
-                sprite_num += 1
-            if sprite_num > 3:
-                sprite_num = 0
-
     elif current_page == BATTLE_BEGINS:
         draw_battle_begins()
     elif current_page == QUESTION:
